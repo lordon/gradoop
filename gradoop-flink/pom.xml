@@ -77,6 +77,12 @@
             <artifactId>JavaFastPFOR</artifactId>
         </dependency>
 
+	<dependency>
+	    <groupId>de.uni_leipzig.dbs</groupId>
+	    <artifactId>jasn1-pubchem-compounds-decoder</artifactId>
+	    <version>0.0.1</version>
+	</dependency>
+
         <!-- Test dependencies -->
 
         <!-- Gradoop -->

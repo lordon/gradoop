@@ -56,6 +56,8 @@
                                     <include>org.mongodb:mongo-java-driver</include>
                                     <include>commons-cli:*</include>
                                     <include>me.lemire.integercompression:*</include>
+                                    <include>org.openmuc:*</include>
+                                    <include>de.uni_leipzig.dbs:*</include>
                                 </includes>
                             </artifactSet>
                         </configuration>
