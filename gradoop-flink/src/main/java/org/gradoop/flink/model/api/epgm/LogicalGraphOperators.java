@@ -46,10 +46,12 @@ import java.util.Objects;
  *
  * @param <LG> Logical graph type
  * @param <GC> Graph collection type
+ * @param <DS> Data sink type
  */
 public interface LogicalGraphOperators<LG extends BaseGraph,
-                                       GC extends BaseGraphCollection>
-        extends GraphBaseOperators {
+                                       GC extends BaseGraphCollection,
+                                       DS>
+        extends LogicalGraphBaseOperators<LG, GC, DS> {
 
   //----------------------------------------------------------------------------
   // Unary Operators
@@ -608,43 +610,6 @@ public interface LogicalGraphOperators<LG extends BaseGraph,
   GC groupEdgesByRollUp(
     List<String> vertexGroupingKeys, List<AggregateFunction> vertexAggregateFunctions,
     List<String> edgeGroupingKeys, List<AggregateFunction> edgeAggregateFunctions);
-
-  //----------------------------------------------------------------------------
-  // Binary Operators
-  //----------------------------------------------------------------------------
-
-  /**
-   * Creates a new logical graph by combining the vertex and edge sets of
-   * this graph and the given graph. Vertex and edge equality is based on their
-   * identifiers.
-   *
-   * @param otherGraph logical graph to combine this graph with
-   * @return logical graph containing all vertices and edges of the
-   * input graphs
-   */
-  LG combine(LG otherGraph);
-
-  /**
-   * Creates a new logical graph containing the overlapping vertex and edge
-   * sets of this graph and the given graph. Vertex and edge equality is
-   * based on their identifiers.
-   *
-   * @param otherGraph logical graph to compute overlap with
-   * @return logical graph that contains all vertices and edges that exist in
-   * both input graphs
-   */
-  LG overlap(LG otherGraph);
-
-  /**
-   * Creates a new logical graph containing only vertices and edges that
-   * exist in that graph but not in the other graph. Vertex and edge equality
-   * is based on their identifiers.
-   *
-   * @param otherGraph logical graph to exclude from that graph
-   * @return logical that contains only vertices and edges that are not in
-   * the other graph
-   */
-  LG exclude(LG otherGraph);
 
   //----------------------------------------------------------------------------
   // Auxiliary Operators

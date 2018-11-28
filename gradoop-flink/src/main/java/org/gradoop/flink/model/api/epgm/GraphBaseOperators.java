@@ -25,8 +25,10 @@ import java.io.IOException;
  *
  * @see BaseGraph
  * @see BaseGraphCollection
+ *
+ * @param <DS> Data sink type
  */
-public interface GraphBaseOperators {
+public interface GraphBaseOperators<DS> {
 
   //----------------------------------------------------------------------------
   // Utility methods
@@ -49,7 +51,7 @@ public interface GraphBaseOperators {
    * @param dataSink data sink
    * @throws IOException if the data sink can't be written
    */
-  void writeTo(DataSink dataSink) throws IOException;
+  void writeTo(DS dataSink) throws IOException;
 
   /**
    * Writes logical graph/graph collection to given data sink with overwrite option
@@ -58,5 +60,5 @@ public interface GraphBaseOperators {
    * @param overWrite determines whether existing files are overwritten
    * @throws IOException if the data sink can't be written
    */
-  void writeTo(DataSink dataSink, boolean overWrite) throws IOException;
+  void writeTo(DS dataSink, boolean overWrite) throws IOException;
 }

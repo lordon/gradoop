@@ -90,7 +90,7 @@ import java.util.Objects;
 public class LogicalGraph implements
   BaseGraph<GraphHead, Vertex, Edge, LogicalGraph, LogicalGraphFactory>,
   LogicalGraphLayout<GraphHead, Vertex, Edge>,
-  LogicalGraphOperators<LogicalGraph, GraphCollection> {
+  LogicalGraphOperators<LogicalGraph, GraphCollection, DataSink> {
   /**
    * Layout for that logical graph.
    */

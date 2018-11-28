@@ -87,7 +87,7 @@ public class GraphCollection implements
   BaseGraphCollection<GraphHead, Vertex, Edge, GraphCollection, LogicalGraph,
     GraphCollectionFactory>,
   GraphCollectionLayout<GraphHead, Vertex, Edge>,
-  GraphCollectionOperators<LogicalGraph, GraphCollection> {
+  GraphCollectionOperators<LogicalGraph, GraphCollection, DataSink> {
   /**
    * Layout for that graph collection
    */
