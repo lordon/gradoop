@@ -20,8 +20,7 @@ import org.apache.flink.api.java.DataSet;
 import org.gradoop.common.model.api.entities.EPGMEdge;
 import org.gradoop.common.model.api.entities.EPGMGraphHead;
 import org.gradoop.common.model.api.entities.EPGMVertex;
-import org.gradoop.flink.model.api.layouts.GraphCollectionLayoutFactory;
-import org.gradoop.flink.model.impl.epgm.LogicalGraph;
+import org.gradoop.flink.model.api.layouts.BaseLayoutFactory;
 import org.gradoop.flink.model.impl.layouts.transactional.tuples.GraphTransaction;
 
 import java.util.Collection;
@@ -35,19 +34,23 @@ import java.util.Map;
  * @param <V> the vertex type
  * @param <E> the edge type
  * @param <GC> the type of the graph collection that will be created with this factory
+ * @param <LG> the type of corresponding logical graph
+ * @param <GCLF> the type of the graph collection layout factory
  */
 public interface BaseGraphCollectionFactory<
   G extends EPGMGraphHead,
   V extends EPGMVertex,
   E extends EPGMEdge,
-  GC extends BaseGraphCollection> {
+  GC extends BaseGraphCollection,
+  LG extends BaseGraph,
+  GCLF extends BaseLayoutFactory> {
 
   /**
    * Sets the layout factory that is responsible for creating a graph collection layout.
    *
    * @param layoutFactory graph collection layout factory
    */
-  void setLayoutFactory(GraphCollectionLayoutFactory<G, V, E> layoutFactory);
+  void setLayoutFactory(GCLF layoutFactory);
 
   /**
    * Creates a collection from the given datasets.
@@ -96,7 +99,7 @@ public interface BaseGraphCollectionFactory<
    * @param logicalGraphLayout  input graph
    * @return 1-element graph collection
    */
-  GC fromGraph(LogicalGraph logicalGraphLayout);
+  GC fromGraph(LG logicalGraphLayout);
 
   /**
    * Creates a graph collection from a graph transaction dataset.

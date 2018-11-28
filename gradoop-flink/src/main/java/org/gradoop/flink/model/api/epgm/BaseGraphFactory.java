@@ -19,8 +19,7 @@ import org.apache.flink.api.java.DataSet;
 import org.gradoop.common.model.api.entities.EPGMEdge;
 import org.gradoop.common.model.api.entities.EPGMGraphHead;
 import org.gradoop.common.model.api.entities.EPGMVertex;
-import org.gradoop.flink.model.api.layouts.LogicalGraphLayoutFactory;
-import org.gradoop.flink.model.impl.epgm.LogicalGraph;
+import org.gradoop.flink.model.api.layouts.BaseLayoutFactory;
 
 import java.util.Collection;
 import java.util.Map;
@@ -33,19 +32,21 @@ import java.util.Map;
  * @param <V> the vertex type
  * @param <E> the edge type
  * @param <LG> the type of the logical graph that will be created with this factory
+ * @param <LGLF> the type of the logical graph layout factory
  */
 public interface BaseGraphFactory<
   G extends EPGMGraphHead,
   V extends EPGMVertex,
   E extends EPGMEdge,
-  LG extends BaseGraph> {
+  LG extends BaseGraph,
+  LGLF extends BaseLayoutFactory> {
 
   /**
    * Sets the layout factory that is responsible for creating a graph layout.
    *
    * @param layoutFactory graph layout factory
    */
-  void setLayoutFactory(LogicalGraphLayoutFactory<G, V, E> layoutFactory);
+  void setLayoutFactory(LGLF layoutFactory);
 
   /**
    * Creates a logical graph from the given vertices.
@@ -78,7 +79,7 @@ public interface BaseGraphFactory<
    * @param edges       Edge DataSet
    * @return Logical graph
    */
-  LogicalGraph fromDataSets(DataSet<G> graphHead, DataSet<V> vertices, DataSet<E> edges);
+  LG fromDataSets(DataSet<G> graphHead, DataSet<V> vertices, DataSet<E> edges);
 
   /**
    * Creates a logical graph from the given datasets. A new graph head is created and all vertices

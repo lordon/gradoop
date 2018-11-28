@@ -20,14 +20,12 @@ import org.gradoop.common.config.GradoopConfig;
 import org.gradoop.common.model.impl.pojo.Edge;
 import org.gradoop.common.model.impl.pojo.GraphHead;
 import org.gradoop.common.model.impl.pojo.Vertex;
+import org.gradoop.flink.model.api.layouts.GraphCollectionLayoutFactory;
+import org.gradoop.flink.model.api.layouts.LogicalGraphLayoutFactory;
 import org.gradoop.flink.model.impl.epgm.GraphCollection;
 import org.gradoop.flink.model.impl.epgm.GraphCollectionFactory;
 import org.gradoop.flink.model.impl.epgm.LogicalGraph;
 import org.gradoop.flink.model.impl.epgm.LogicalGraphFactory;
-import org.gradoop.flink.model.api.epgm.BaseGraphCollectionFactory;
-import org.gradoop.flink.model.api.epgm.BaseGraphFactory;
-import org.gradoop.flink.model.api.layouts.GraphCollectionLayoutFactory;
-import org.gradoop.flink.model.api.layouts.LogicalGraphLayoutFactory;
 import org.gradoop.flink.model.impl.layouts.gve.GVECollectionLayoutFactory;
 import org.gradoop.flink.model.impl.layouts.gve.GVEGraphLayoutFactory;
 
@@ -46,13 +44,13 @@ public class GradoopFlinkConfig extends GradoopConfig<GraphHead, Vertex, Edge> {
   /**
    * Creates instances of {@link LogicalGraph}
    */
-  private final BaseGraphFactory<GraphHead, Vertex, Edge, LogicalGraph> logicalGraphFactory;
+  private final LogicalGraphFactory logicalGraphFactory;
 
   /**
    * Creates instances of {@link GraphCollection}
    */
-  private final BaseGraphCollectionFactory<GraphHead, Vertex, Edge, GraphCollection>
-    graphCollectionFactory;
+  private final GraphCollectionFactory graphCollectionFactory;
+
 
   /**
    * Creates a new Configuration.
@@ -122,7 +120,7 @@ public class GradoopFlinkConfig extends GradoopConfig<GraphHead, Vertex, Edge> {
    * @return factory for logical graph layouts
    */
   public LogicalGraphFactory getLogicalGraphFactory() {
-    return (LogicalGraphFactory) logicalGraphFactory;
+    return logicalGraphFactory;
   }
 
   /**
@@ -131,7 +129,7 @@ public class GradoopFlinkConfig extends GradoopConfig<GraphHead, Vertex, Edge> {
    * @return factory for graph collection layouts
    */
   public GraphCollectionFactory getGraphCollectionFactory() {
-    return (GraphCollectionFactory) graphCollectionFactory;
+    return graphCollectionFactory;
   }
 
   /**

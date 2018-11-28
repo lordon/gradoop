@@ -27,12 +27,16 @@ import org.gradoop.flink.util.GradoopFlinkConfig;
  * @param <V> the vertex type
  * @param <E> the edge type
  * @param <GC> the type of the graph collection that will be created with a provided factory
+ * @param <LG> the logical graph type
+ * @param <GCF> the type of the factory which will create instances of GC
  */
 public interface BaseGraphCollection<
   G extends EPGMGraphHead,
   V extends EPGMVertex,
   E extends EPGMEdge,
-  GC extends BaseGraphCollection> {
+  GC extends BaseGraphCollection,
+  LG extends BaseGraph,
+  GCF extends BaseGraphCollectionFactory> {
   /**
    * Returns the Gradoop Flink configuration.
    *
@@ -45,5 +49,5 @@ public interface BaseGraphCollection<
    *
    * @return a factory that can be used to create a {@link GC} instance
    */
-  BaseGraphCollectionFactory<G, V, E, GC> getFactory();
+  GCF getFactory();
 }

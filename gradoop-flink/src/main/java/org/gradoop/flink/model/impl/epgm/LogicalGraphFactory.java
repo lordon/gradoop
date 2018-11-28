@@ -31,8 +31,9 @@ import java.util.Objects;
  * Responsible for creating instances of {@link LogicalGraph} based on a specific
  * {@link org.gradoop.flink.model.api.layouts.LogicalGraphLayout}.
  */
-public class LogicalGraphFactory
-  implements BaseGraphFactory<GraphHead, Vertex, Edge, LogicalGraph> {
+public class LogicalGraphFactory implements
+  BaseGraphFactory<GraphHead, Vertex, Edge, LogicalGraph,
+    LogicalGraphLayoutFactory<GraphHead, Vertex, Edge>> {
   /**
    * Creates the layout from given data.
    */

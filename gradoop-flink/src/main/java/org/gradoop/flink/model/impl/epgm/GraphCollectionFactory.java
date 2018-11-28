@@ -34,8 +34,9 @@ import java.util.Objects;
  * Responsible for creating instances of {@link GraphCollection} based on a specific
  * {@link GraphCollectionLayout}.
  */
-public class GraphCollectionFactory
-  implements BaseGraphCollectionFactory<GraphHead, Vertex, Edge, GraphCollection> {
+public class GraphCollectionFactory implements
+  BaseGraphCollectionFactory<GraphHead, Vertex, Edge, GraphCollection, LogicalGraph,
+    GraphCollectionLayoutFactory<GraphHead, Vertex, Edge>> {
   /**
    * Creates the layout from given data.
    */
@@ -77,8 +78,8 @@ public class GraphCollectionFactory
   @Override
   public GraphCollection fromIndexedDataSets(Map<String, DataSet<GraphHead>> graphHeads,
     Map<String, DataSet<Vertex>> vertices, Map<String, DataSet<Edge>> edges) {
-    GraphCollectionLayout<GraphHead, Vertex, Edge> layout = layoutFactory
-      .fromIndexedDataSets(graphHeads, vertices, edges);
+    GraphCollectionLayout<GraphHead, Vertex, Edge> layout =
+      layoutFactory.fromIndexedDataSets(graphHeads, vertices, edges);
     return new GraphCollection(layout, config);
   }
 
@@ -102,8 +103,8 @@ public class GraphCollectionFactory
   public GraphCollection fromTransactions(DataSet<GraphTransaction> transactions,
     GroupReduceFunction<Vertex, Vertex> vertexMergeReducer,
     GroupReduceFunction<Edge, Edge> edgeMergeReducer) {
-    return new GraphCollection(layoutFactory
-      .fromTransactions(transactions, vertexMergeReducer, edgeMergeReducer), config);
+    return new GraphCollection(
+      layoutFactory.fromTransactions(transactions, vertexMergeReducer, edgeMergeReducer), config);
   }
 
   @Override
