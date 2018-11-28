@@ -16,7 +16,6 @@
 package org.gradoop.flink.model.api.epgm;
 
 import org.apache.flink.api.java.DataSet;
-import org.gradoop.flink.io.api.DataSink;
 
 import java.io.IOException;
 
