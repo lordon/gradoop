@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014 - 2018 Leipzig University (Database Research Group)
+ * Copyright © 2014 - 2019 Leipzig University (Database Research Group)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,17 +39,11 @@ public class RandomEdgeSamplingTest extends ParameterizedTestForGraphSampling {
     super(testName, Long.parseLong(seed), Float.parseFloat(sampleSize));
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public SamplingAlgorithm getSamplingOperator() {
     return new RandomEdgeSampling(sampleSize, seed);
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public void validateSpecific(LogicalGraph input, LogicalGraph output) {
     Set<GradoopId> connectedVerticesIDs = new HashSet<>();
@@ -69,13 +63,13 @@ public class RandomEdgeSamplingTest extends ParameterizedTestForGraphSampling {
   @Parameterized.Parameters(name = "{index}: {0}")
   public static Iterable data() {
     return Arrays.asList(new String[] {
-        "EdgeSamplingTest with seed",
-        "-4181668494294894490",
-        "0.272f"
+      "EdgeSamplingTest with seed",
+      "-4181668494294894490",
+      "0.272f"
     }, new String[] {
-        "EdgeSamplingTest without seed",
-        "0",
-        "0.272f"
+      "EdgeSamplingTest without seed",
+      "0",
+      "0.272f"
     });
   }
 }

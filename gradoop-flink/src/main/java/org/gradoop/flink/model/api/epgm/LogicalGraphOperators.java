@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014 - 2018 Leipzig University (Database Research Group)
+ * Copyright © 2014 - 2019 Leipzig University (Database Research Group)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +22,12 @@ import org.gradoop.common.model.impl.pojo.GraphHead;
 import org.gradoop.common.model.impl.pojo.Vertex;
 import org.gradoop.flink.model.api.functions.AggregateFunction;
 import org.gradoop.flink.model.api.functions.EdgeAggregateFunction;
-import org.gradoop.flink.model.api.functions.PropertyTransformationFunction;
 import org.gradoop.flink.model.api.functions.TransformationFunction;
 import org.gradoop.flink.model.api.functions.VertexAggregateFunction;
 import org.gradoop.flink.model.api.operators.BinaryGraphToGraphOperator;
 import org.gradoop.flink.model.api.operators.GraphsToGraphOperator;
+import org.gradoop.flink.model.api.operators.UnaryBaseGraphToBaseGraphOperator;
 import org.gradoop.flink.model.api.operators.UnaryGraphToCollectionOperator;
-import org.gradoop.flink.model.api.operators.UnaryGraphToGraphOperator;
 import org.gradoop.flink.model.impl.epgm.LogicalGraph;
 import org.gradoop.flink.model.impl.operators.grouping.Grouping;
 import org.gradoop.flink.model.impl.operators.grouping.GroupingStrategy;
@@ -341,51 +340,6 @@ public interface LogicalGraphOperators<LG extends BaseGraph,
   LG transformEdges(TransformationFunction<Edge> edgeTransformationFunction);
 
   /**
-   * Transforms the graph head properties of the logical graph using the given
-   * property transformation function. The identity of the graph is preserved.
-   *
-   * This is a convenience function for
-   * {@link LogicalGraph#transformGraphHead(TransformationFunction)}.
-   *
-   * @param propertyKey                          the property key to be considered
-   * @param graphHeadPropTransformationFunction  graph head property transformation function
-   * @return transformed logical graph
-   */
-  LG transformGraphHeadProperties(
-    String propertyKey,
-    PropertyTransformationFunction graphHeadPropTransformationFunction);
-
-  /**
-   * Transforms the vertex properties of the logical graph using the given transformation
-   * function. The identity of the vertices is preserved.
-   *
-   * This is a convenience function for
-   * {@link LogicalGraph#transformVertices(TransformationFunction)}.
-   *
-   * @param propertyKey                       the property key to be considered
-   * @param vertexPropTransformationFunction  vertex property transformation function
-   * @return transformed logical graph
-   */
-  LG transformVertexProperties(
-    String propertyKey,
-    PropertyTransformationFunction vertexPropTransformationFunction);
-
-  /**
-   * Transforms the edge properties of the logical graph using the given transformation
-   * function. The identity of the edges is preserved.
-   *
-   * This is a convenience function for
-   * {@link LogicalGraph#transformEdges(TransformationFunction)}.
-   *
-   * @param propertyKey                     the property key to be considered
-   * @param edgePropTransformationFunction  edge property transformation function
-   * @return transformed logical graph
-   */
-  LG transformEdgeProperties(
-    String propertyKey,
-    PropertyTransformationFunction edgePropTransformationFunction);
-
-  /**
    * Returns the subgraph that is induced by the vertices which fulfill the
    * given filter function.
    *
@@ -631,7 +585,7 @@ public interface LogicalGraphOperators<LG extends BaseGraph,
    * @param operator unary graph to graph operator
    * @return result of given operator
    */
-  LG callForGraph(UnaryGraphToGraphOperator operator);
+  LG callForGraph(UnaryBaseGraphToBaseGraphOperator<LG> operator);
 
   /**
    * Creates a logical graph from that graph and the input graph using the

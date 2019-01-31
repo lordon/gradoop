@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014 - 2018 Leipzig University (Database Research Group)
+ * Copyright © 2014 - 2019 Leipzig University (Database Research Group)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,9 @@ import org.apache.flink.api.java.DataSet;
 import org.gradoop.common.model.api.entities.EPGMEdge;
 import org.gradoop.common.model.api.entities.EPGMGraphHead;
 import org.gradoop.common.model.api.entities.EPGMVertex;
+import org.gradoop.common.model.api.entities.ElementFactoryProvider;
 import org.gradoop.flink.model.api.layouts.BaseLayoutFactory;
+import org.gradoop.flink.model.impl.epgm.LogicalGraph;
 import org.gradoop.flink.model.impl.layouts.transactional.tuples.GraphTransaction;
 
 import java.util.Collection;
@@ -43,7 +45,7 @@ public interface BaseGraphCollectionFactory<
   E extends EPGMEdge,
   GC extends BaseGraphCollection,
   LG extends BaseGraph,
-  GCLF extends BaseLayoutFactory> {
+  GCLF extends BaseLayoutFactory> extends ElementFactoryProvider<G, V, E> {
 
   /**
    * Sets the layout factory that is responsible for creating a graph collection layout.
@@ -100,6 +102,14 @@ public interface BaseGraphCollectionFactory<
    * @return 1-element graph collection
    */
   GC fromGraph(LG logicalGraphLayout);
+
+  /**
+   * Creates a graph collection from multiple given logical graphs.
+   *
+   * @param logicalGraphLayout  input graphs
+   * @return graph collection
+   */
+  GC fromGraphs(LogicalGraph... logicalGraphLayout);
 
   /**
    * Creates a graph collection from a graph transaction dataset.
