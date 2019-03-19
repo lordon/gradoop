@@ -55,14 +55,14 @@ public abstract class GradoopFlinkTestBase {
 
   protected static final int DEFAULT_PARALLELISM = 4;
 
-  protected static final long TASKMANAGER_MEMORY_SIZE_MB = 512;
+  protected static final long TASKMANAGER_MEMORY_SIZE_MB = 4096;
 
   protected static LocalFlinkMiniCluster CLUSTER = null;
 
   /**
    * Flink Execution Environment
    */
-  private ExecutionEnvironment env;
+  protected ExecutionEnvironment env;
 
   /**
    * Gradoop Flink configuration

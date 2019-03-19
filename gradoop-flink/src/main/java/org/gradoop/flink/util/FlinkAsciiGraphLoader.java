@@ -41,7 +41,7 @@ public class FlinkAsciiGraphLoader {
   /**
    * Gradoop Flink configuration
    */
-  private final GradoopFlinkConfig config;
+  protected final GradoopFlinkConfig config;
 
   /**
    * AsciiGraphLoader to create graph, vertex and edge collections.
