@@ -1,0 +1,167 @@
+/*
+ * Copyright © 2014 - 2019 Leipzig University (Database Research Group)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.gradoop.flink.model.impl.layouts.table.normalized.operators.base;
+
+import org.apache.flink.table.api.Table;
+import org.gradoop.flink.model.impl.layouts.table.common.operators.base.TableCollectionSetOperatorBase;
+import org.gradoop.flink.model.impl.layouts.table.normalized.NormalizedTableSet;
+import org.gradoop.flink.model.impl.layouts.table.normalized.NormalizedTableSetFactory;
+import org.gradoop.flink.model.impl.layouts.table.util.ExpressionSeqBuilder;
+
+/**
+ * Base class for all collection set operator implementations in normalized layout,
+ * like Difference, Intersection and Union
+ */
+public abstract class NormalizedCollectionSetOperatorBase
+  extends TableCollectionSetOperatorBase<NormalizedTableSet, NormalizedTableSetFactory> {
+
+  @Override
+  protected NormalizedTableSet buildInducedTableSet(Table newGraphIds) {
+    Table newGraphs = computeNewGraphHeads(newGraphIds);
+    Table newVerticesGraphs = firstTableSet.getVerticesGraphs();
+    Table newEdgesGraphs = firstTableSet.getEdgesGraphs();
+    Table newVertices = computeNewVertices(computeTempVerticesGraphs(newGraphs));
+    Table newEdges = computeNewEdges(computeTempEdgesGraphs(newGraphs));
+    Table newVertexPropertyValues = computeNewVertexPropertyValues(newVertices);
+    Table newEdgePropertyValues = computeNewEdgePropertyValues(newEdges);
+    Table newGraphPropertyValues = computeNewGraphPropertyValues(newGraphs);
+
+    return tableSetFactory.fromTables(newVertices, newEdges, newGraphs, newVerticesGraphs,
+      newEdgesGraphs, newVertexPropertyValues, newEdgePropertyValues, newGraphPropertyValues);
+  }
+
+  /**
+   * Returns new graphs table by joining graphs of first table set with given table of graph ids
+   *
+   * @param newGraphIds table of graph ids
+   * @return graphs table
+   */
+  protected Table computeNewGraphHeads(Table newGraphIds) {
+    String tmpFieldName = tableEnv.createUniqueAttributeName();
+    return firstTableSet.projectToGraphs(
+      firstTableSet.getGraphs()
+        .join(newGraphIds
+            .select(new ExpressionSeqBuilder()
+              .field(NormalizedTableSet.FIELD_GRAPH_ID).as(tmpFieldName)
+              .buildSeq()),
+          builder.field(NormalizedTableSet.FIELD_GRAPH_ID).equalTo(tmpFieldName).toExpression())
+    );
+  }
+
+  /**
+   * Returns a temporary vertices-graphs table by joining vertices-graphs of first table set with
+   * given table of graphs
+   *
+   * @param newGraphs table of graphs
+   * @return vertices-graphs table
+   */
+  protected Table computeTempVerticesGraphs(Table newGraphs) {
+    return firstTableSet.projectToVerticesGraphs(
+      firstTableSet.getVerticesGraphs()
+        .join(newGraphs, builder
+          .field(NormalizedTableSet.FIELD_GRAPH_ID)
+          .equalTo(NormalizedTableSet.FIELD_VERTEX_GRAPH_ID).toExpression())
+    );
+  }
+
+  /**
+   * Returns a temporary edges-graphs table by joining edges-graphs of first table set with given
+   * table of graphs
+   *
+   * @param newGraphs table of graphs
+   * @return edges-graphs table
+   */
+  protected Table computeTempEdgesGraphs(Table newGraphs) {
+    return firstTableSet.projectToEdgesGraphs(
+      firstTableSet.getEdgesGraphs()
+        .join(newGraphs, builder
+          .field(NormalizedTableSet.FIELD_GRAPH_ID)
+          .equalTo(NormalizedTableSet.FIELD_EDGE_GRAPH_ID).toExpression())
+    );
+  }
+
+  /**
+   * Returns a new vertices table by joining vertices of first table set with given table of
+   * vertices-graphs
+   *
+   * @param newVerticesGraphs table of vertices-graphs
+   * @return vertices table
+   */
+  protected Table computeNewVertices(Table newVerticesGraphs) {
+    Table vertexIds = newVerticesGraphs
+      .select(NormalizedTableSet.FIELD_GRAPH_VERTEX_ID).distinct();
+    return firstTableSet.projectToVertices(
+      firstTableSet.getVertices()
+        .join(vertexIds, builder
+          .field(NormalizedTableSet.FIELD_VERTEX_ID)
+          .equalTo(NormalizedTableSet.FIELD_GRAPH_VERTEX_ID).toExpression())
+    );
+  }
+
+  /**
+   * Returns a new edges table by joining edges of first table set with given table of
+   * edges-graphs
+   *
+   * @param newEdgesGraphs table of edges-graphs
+   * @return edges table
+   */
+  protected Table computeNewEdges(Table newEdgesGraphs) {
+    Table edgeIds = newEdgesGraphs
+      .select(NormalizedTableSet.FIELD_GRAPH_EDGE_ID).distinct();
+    return firstTableSet.projectToEdges(firstTableSet.getEdges()
+      .join(edgeIds, builder
+        .field(NormalizedTableSet.FIELD_EDGE_ID)
+        .equalTo(NormalizedTableSet.FIELD_GRAPH_EDGE_ID).toExpression())
+    );
+  }
+
+  /**
+   * Returns a new vertex-property-values table by joining vertex-property-values of first table
+   * set with given vertices
+   *
+   * @param newVertices table of vertices
+   * @return vertex-property-values table
+   */
+  protected Table computeNewVertexPropertyValues(Table newVertices) {
+    return NormalizedOperatorUtils.computeNewVertexInducedPropertyValues(firstTableSet,
+      firstTableSet.getVertexPropertyValues(), newVertices);
+  }
+
+  /**
+   * Returns a new edge-property-values table by joining edge-property-values of first table set
+   * with given edges
+   *
+   * @param newEdges table of edges
+   * @return edge-property-values table
+   */
+  protected Table computeNewEdgePropertyValues(Table newEdges) {
+    return NormalizedOperatorUtils.computeNewEdgeInducedPropertyValues(firstTableSet,
+      firstTableSet.getEdgePropertyValues(), newEdges);
+  }
+
+  /**
+   * Returns a new graph-property-values table by joining graüh-property-values of first table set
+   * with given graphs
+   *
+   * @param newGraphs table of graphs
+   * @return graph-property-values table
+   */
+  protected Table computeNewGraphPropertyValues(Table newGraphs) {
+    return NormalizedOperatorUtils.computeNewGraphInducedPropertyValues(firstTableSet,
+      firstTableSet.getGraphPropertyValues(), newGraphs);
+  }
+
+}
