@@ -35,7 +35,7 @@ import java.util.Set;
  *
  * @see GradoopId
  */
-public class GradoopIdSet extends AbstractSet<GradoopId> implements Value {
+public class GradoopIdSet extends AbstractSet<GradoopId> implements Value, Comparable<GradoopIdSet> {
   /**
    * Contains the set of gradoop ids.
    */
@@ -353,6 +353,17 @@ public class GradoopIdSet extends AbstractSet<GradoopId> implements Value {
         return sb.append(']').toString();
       }
       sb.append(',').append(' ');
+    }
+  }
+
+  @Override
+  public int compareTo(GradoopIdSet o) {
+    if (this.size() < o.size()) {
+      return -1;
+    } else if (this.size() > o.size()) {
+      return 1;
+    } else {
+      return 0;
     }
   }
 }

@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 /**
  * Represents the properties of an {@link org.gradoop.common.model.impl.pojo.Element}.
  */
-public class Properties implements Iterable<Property>, Value, Serializable {
+public class Properties implements Iterable<Property>, Value, Serializable, Comparable<Properties> {
 
   /**
    * Default capacity for new property lists.
@@ -305,5 +305,16 @@ public class Properties implements Iterable<Property>, Value, Serializable {
     return toList().stream()
       .map(Property::toString)
       .collect(Collectors.joining(","));
+  }
+
+  @Override
+  public int compareTo(Properties o) {
+    if (this.size() < o.size()) {
+      return -1;
+    } else if (this.size() > o.size()) {
+      return 1;
+    } else {
+      return 0;
+    }
   }
 }
