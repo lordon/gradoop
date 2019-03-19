@@ -592,6 +592,24 @@
                 <version>${dep.flink.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.apache.flink</groupId>
+                <artifactId>flink-table_2.11</artifactId>
+                <version>${dep.flink.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.flink</groupId>
+                <artifactId>flink-scala_2.11</artifactId>
+                <version>${dep.flink.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.flink</groupId>
+                <artifactId>flink-streaming-scala_2.11</artifactId>
+                <version>${dep.flink.version}</version>
+            </dependency>
+
             <!-- Accumulo -->
             <dependency>
                 <groupId>org.apache.accumulo</groupId>
