@@ -26,6 +26,7 @@ import org.gradoop.common.model.impl.pojo.Vertex;
 import org.gradoop.flink.model.api.epgm.BaseGraphCollectionFactory;
 import org.gradoop.flink.model.api.layouts.GraphCollectionLayout;
 import org.gradoop.flink.model.api.layouts.GraphCollectionLayoutFactory;
+import org.gradoop.flink.model.impl.epgm.table.TableGraphCollection;
 import org.gradoop.flink.model.impl.functions.epgm.Id;
 import org.gradoop.flink.model.impl.layouts.transactional.tuples.GraphTransaction;
 import org.gradoop.flink.util.GradoopFlinkConfig;
@@ -171,5 +172,16 @@ public class GraphCollectionFactory implements
   @Override
   public GraphCollection createEmptyCollection() {
     return new GraphCollection(layoutFactory.createEmptyCollection(), config);
+  }
+
+  /**
+   * Creates a graph collection from given {@link TableGraphCollection}
+   *
+   * @param graphCollection table graph collection
+   * @return collection
+   */
+  public GraphCollection fromTableGraphCollection(TableGraphCollection graphCollection) {
+    return fromDataSets(graphCollection.getGraphHeads(), graphCollection.getVertices(),
+      graphCollection.getEdges());
   }
 }

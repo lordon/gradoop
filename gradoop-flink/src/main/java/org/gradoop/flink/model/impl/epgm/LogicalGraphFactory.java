@@ -24,6 +24,7 @@ import org.gradoop.common.model.impl.pojo.GraphHead;
 import org.gradoop.common.model.impl.pojo.Vertex;
 import org.gradoop.flink.model.api.epgm.BaseGraphFactory;
 import org.gradoop.flink.model.api.layouts.LogicalGraphLayoutFactory;
+import org.gradoop.flink.model.impl.epgm.table.TableLogicalGraph;
 import org.gradoop.flink.util.GradoopFlinkConfig;
 
 import java.util.Collection;
@@ -134,5 +135,16 @@ public class LogicalGraphFactory implements
   @Override
   public LogicalGraph createEmptyGraph() {
     return new LogicalGraph(layoutFactory.createEmptyGraph(), config);
+  }
+
+  /**
+   * Creates a logical graph from given {@link TableLogicalGraph}
+   *
+   * @param logicalGraph table logical graph
+   * @return logical graph
+   */
+  public LogicalGraph fromTableLogicalGraph(TableLogicalGraph logicalGraph) {
+    return fromDataSets(logicalGraph.getGraphHead(), logicalGraph.getVertices(),
+      logicalGraph.getEdges());
   }
 }
