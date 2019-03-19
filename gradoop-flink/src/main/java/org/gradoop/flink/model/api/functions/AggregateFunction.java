@@ -52,6 +52,23 @@ public interface AggregateFunction extends Serializable {
   PropertyValue getIncrement(Element element);
 
   /**
+   * Registered name of aggregation function for use within Table-API
+   * @return name of aggregation function
+   */
+  default org.apache.flink.table.functions.AggregateFunction getTableAggFunction() {
+    throw new RuntimeException("AggregateFunction " + getClass().getName() + " is not prepared " +
+      "for use within Flink's Table API");
+  };
+
+  /**
+   * Returns property key whose value should be aggregated
+   * @return property key
+   */
+  default String getPropertyKey() {
+    return null;
+  }
+
+  /**
    * Returns whether this function aggregates vertices.
    *
    * @return true, if it aggregates vertices

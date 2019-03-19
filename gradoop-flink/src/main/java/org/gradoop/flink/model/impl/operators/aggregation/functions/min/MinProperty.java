@@ -15,8 +15,10 @@
  */
 package org.gradoop.flink.model.impl.operators.aggregation.functions.min;
 
+import org.apache.flink.table.functions.AggregateFunction;
 import org.gradoop.common.model.impl.pojo.Element;
 import org.gradoop.common.model.impl.properties.PropertyValue;
+import org.gradoop.flink.model.impl.layouts.table.common.functions.table.aggregate.TableMinProperty;
 import org.gradoop.flink.model.impl.operators.aggregation.functions.BaseAggregateFunction;
 
 import java.util.Objects;
@@ -55,5 +57,15 @@ public class MinProperty extends BaseAggregateFunction implements Min {
   @Override
   public PropertyValue getIncrement(Element element) {
     return element.getPropertyValue(propertyKey);
+  }
+
+  @Override
+  public AggregateFunction getTableAggFunction() {
+    return new TableMinProperty();
+  }
+
+  @Override
+  public String getPropertyKey() {
+    return this.propertyKey;
   }
 }
