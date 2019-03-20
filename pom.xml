@@ -433,6 +433,7 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${plugin.maven-surefire.version}</version>
                     <configuration>
+                        <argLine>-Xmx6G</argLine>
                         <excludes>
                             <exclude>**/*TestBase*.class</exclude>
                         </excludes>
