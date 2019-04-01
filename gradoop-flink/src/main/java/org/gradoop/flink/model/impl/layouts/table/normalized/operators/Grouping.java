@@ -428,7 +428,7 @@ public class Grouping extends TableGroupingBase<NormalizedTableSet, NormalizedTa
 
   /**
    * Implementation of computation of new super vertex property values used in
-   * {@link #joinVertexPropertyValues()}
+   * {@link #computeSuperVertexPropertyValues(Table)}
    *
    * For either
    *  - grouped vertex properties
@@ -453,7 +453,7 @@ public class Grouping extends TableGroupingBase<NormalizedTableSet, NormalizedTa
 
   /**
    * Implementation of computation of new super edge property values used in
-   * {@link #joinEdgePropertyValues(Table)} ()}
+   * {@link #computeSuperEdgePropertyValues(Table)}
    *
    * For either
    *  - grouped edge properties
