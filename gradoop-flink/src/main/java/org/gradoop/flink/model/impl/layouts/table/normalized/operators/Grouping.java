@@ -73,8 +73,6 @@ public class Grouping extends TableGroupingBase<NormalizedTableSet, NormalizedTa
 
   @Override
   protected NormalizedTableSet performGrouping() {
-    tableSetFactory = new NormalizedTableSetFactory(config);
-
     // 1. Prepare vertices
     Table preparedVertices = transformToQueryableResultTable(joinVertexPropertyValues());
 

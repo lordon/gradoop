@@ -42,7 +42,6 @@ public class Subgraph extends TableSubgraphBase<NormalizedTableSet, NormalizedTa
 
   @Override
   protected NormalizedTableSet buildInducedTableSet(Table vertices, Table edges) {
-    tableSetFactory = new NormalizedTableSetFactory(config);
     Table newVertexPropertyValues =
       computeNewVertexInducedPropertyValues(tableSet, tableSet.getVertexPropertyValues(), vertices);
     Table newEdgePropertyValues =
