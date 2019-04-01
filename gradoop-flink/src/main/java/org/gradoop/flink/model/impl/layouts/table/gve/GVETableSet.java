@@ -18,13 +18,13 @@ package org.gradoop.flink.model.impl.layouts.table.gve;
 import com.google.common.collect.ImmutableMap;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.table.api.Table;
+import org.apache.flink.table.api.TableSchema;
 import org.apache.flink.table.api.Types;
 import org.apache.flink.table.expressions.Expression;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.id.GradoopIdSet;
 import org.gradoop.common.model.impl.properties.Properties;
 import org.gradoop.flink.model.api.layouts.table.BaseTableSet;
-import org.gradoop.flink.model.impl.layouts.table.TableSchema;
 import org.gradoop.flink.model.impl.layouts.table.TableSetSchema;
 import org.gradoop.flink.model.impl.layouts.table.TableSet;
 import scala.collection.Seq;
@@ -105,28 +105,29 @@ public class GVETableSet extends TableSet implements BaseTableSet {
    */
   static final TableSetSchema SCHEMA = new TableSetSchema(
     ImmutableMap.<String, TableSchema>builder()
-      .put(TABLE_VERTICES, new TableSchema(ImmutableMap.of(
-        FIELD_VERTEX_ID, TypeInformation.of(GradoopId.class),
-        FIELD_VERTEX_LABEL, Types.STRING(),
-        FIELD_VERTEX_GRAPH_IDS, TypeInformation.of(GradoopIdSet.class),
-        FIELD_VERTEX_PROPERTIES, TypeInformation.of(Properties.class)
-      )))
-      .put(TABLE_EDGES, new TableSchema(ImmutableMap.<String, TypeInformation>builder()
-        .put(FIELD_EDGE_ID, TypeInformation.of(GradoopId.class))
-        .put(FIELD_TAIL_ID, TypeInformation.of(GradoopId.class))
-        .put(FIELD_HEAD_ID, TypeInformation.of(GradoopId.class))
-        .put(FIELD_EDGE_LABEL, Types.STRING())
-        .put(FIELD_EDGE_GRAPH_IDS, TypeInformation.of(GradoopIdSet.class))
-        .put(FIELD_EDGE_PROPERTIES, TypeInformation.of(Properties.class))
+      .put(TABLE_VERTICES, new TableSchema.Builder()
+        .field(FIELD_VERTEX_ID, TypeInformation.of(GradoopId.class))
+        .field(FIELD_VERTEX_LABEL, Types.STRING())
+        .field(FIELD_VERTEX_GRAPH_IDS, TypeInformation.of(GradoopIdSet.class))
+        .field(FIELD_VERTEX_PROPERTIES, TypeInformation.of(Properties.class))
         .build()
-      ))
-      .put(TABLE_GRAPHS, new TableSchema(ImmutableMap.of(
-        FIELD_GRAPH_ID, TypeInformation.of(GradoopId.class),
-        FIELD_GRAPH_LABEL, Types.STRING(),
-        FIELD_GRAPH_PROPERTIES, TypeInformation.of(Properties.class)
-      )))
-      .build()
-  );
+      )
+      .put(TABLE_EDGES, new TableSchema.Builder()
+        .field(FIELD_EDGE_ID, TypeInformation.of(GradoopId.class))
+        .field(FIELD_TAIL_ID, TypeInformation.of(GradoopId.class))
+        .field(FIELD_HEAD_ID, TypeInformation.of(GradoopId.class))
+        .field(FIELD_EDGE_LABEL, Types.STRING())
+        .field(FIELD_EDGE_GRAPH_IDS, TypeInformation.of(GradoopIdSet.class))
+        .field(FIELD_EDGE_PROPERTIES, TypeInformation.of(Properties.class))
+        .build()
+      )
+      .put(TABLE_GRAPHS, new TableSchema.Builder()
+        .field(FIELD_GRAPH_ID, TypeInformation.of(GradoopId.class))
+        .field(FIELD_GRAPH_LABEL, Types.STRING())
+        .field(FIELD_GRAPH_PROPERTIES, TypeInformation.of(Properties.class))
+        .build()
+      )
+      .build());
 
   /**
    * Constructor
@@ -141,6 +142,11 @@ public class GVETableSet extends TableSet implements BaseTableSet {
    */
   public GVETableSet(TableSet tableSet) {
     super(tableSet);
+  }
+
+  @Override
+  public TableSetSchema getSchema() {
+    return SCHEMA;
   }
 
   /**

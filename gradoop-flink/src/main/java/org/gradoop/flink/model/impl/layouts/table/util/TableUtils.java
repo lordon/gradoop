@@ -15,12 +15,19 @@
  */
 package org.gradoop.flink.model.impl.layouts.table.util;
 
+import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.DataSet;
+import org.apache.flink.table.api.TableSchema;
 import org.apache.flink.table.api.java.BatchTableEnvironment;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.table.expressions.Expression;
 import org.apache.flink.types.Row;
+import org.gradoop.flink.model.impl.functions.bool.False;
+import org.gradoop.flink.util.GradoopFlinkConfig;
 import scala.collection.Seq;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Utils methods for general usage of Flinks's Table API
@@ -36,8 +43,7 @@ public class TableUtils {
    * @return queryable table (result)
    */
   public static Table transformToQueryableResultTable(BatchTableEnvironment tableEnv, Table table) {
-    String[] fieldNames = table.getSchema().getFieldNames();
-    String fields = String.join(",", fieldNames);
+    String fields = commaSeparatedFieldNamesOfTableSchema(table.getSchema());
     return tableEnv.fromDataSet(tableEnv.toDataSet(table, Row.class), fields);
   }
 
@@ -58,5 +64,32 @@ public class TableUtils {
     String name = tableEnv.createUniqueTableName();
     tableEnv.registerDataSetInternal(name, dataSet, exprs);
     return tableEnv.scan(name);
+  }
+
+  /**
+   * Returns a string of comma separated field names of given table schema.
+   *
+   * @param tableSchema table schema
+   * @return comma separated fields names of given table schema
+   */
+  public static String commaSeparatedFieldNamesOfTableSchema(TableSchema tableSchema) {
+    return String.join(",", tableSchema.getFieldNames());
+  }
+
+  /**
+   * Returns an empty (zero rows) table instance with given table schema
+   *
+   * @param config current gradoop configuration
+   * @param tableSchema table schema for new table
+   * @return new empty table
+   */
+  public static Table createEmptyTable(GradoopFlinkConfig config, TableSchema tableSchema) {
+    TypeInformation typeInfo = tableSchema.toRowType();
+    List<Row> rowList = new ArrayList<>();
+    rowList.add(new Row(typeInfo.getArity()));
+    DataSet<Row> dataSet = config.getExecutionEnvironment().fromCollection(rowList, typeInfo);
+
+    return config.getTableEnvironment().fromDataSet(dataSet.filter(new False<>()),
+      commaSeparatedFieldNamesOfTableSchema(tableSchema));
   }
 }

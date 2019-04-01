@@ -15,6 +15,7 @@
  */
 package org.gradoop.flink.model.impl.layouts.table.common.functions.table.scalar;
 
+import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.table.functions.ScalarFunction;
 import org.apache.flink.types.Row;
 import org.gradoop.common.model.impl.properties.Properties;
@@ -59,6 +60,9 @@ public class ToProperties extends ScalarFunction {
     }
 
     for (int i = 0; i < row.getArity(); i = i + 2) {
+      if (null == row.getField(i + 1)) {
+        continue;
+      }
       Object f0 = row.getField(i);
       if (!(f0 instanceof String)) {
         throw new RuntimeException("Odd expression of property row must be a property key string");
@@ -76,4 +80,8 @@ public class ToProperties extends ScalarFunction {
     return properties;
   }
 
+  @Override
+  public TypeInformation<?> getResultType(Class<?>[] signature) {
+    return TypeInformation.of(Properties.class);
+  }
 }

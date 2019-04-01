@@ -16,9 +16,9 @@
 package org.gradoop.flink.io.impl.table.csv;
 
 import org.apache.flink.api.common.typeinfo.TypeInformation;
+import org.apache.flink.table.api.TableSchema;
 import org.apache.flink.table.expressions.Expression;
 import org.apache.flink.table.functions.ScalarFunction;
-import org.gradoop.flink.model.impl.layouts.table.TableSchema;
 import org.gradoop.flink.model.impl.layouts.table.util.ExpressionSeqBuilder;
 import org.gradoop.flink.util.GradoopFlinkConfig;
 import scala.collection.Seq;
@@ -41,6 +41,16 @@ public abstract class TableCSVBase {
    * Field delimiter of CSV files.
    */
   protected static final String CSV_FIELD_DELIMITER = ",";
+
+  /**
+   * Schema directory
+   */
+  protected static final String SCHEMA_DIR = "schema" + File.separator;
+
+  /**
+   * Tables file name
+   */
+  protected static final String FILE_NAME_TABLES = "tables";
 
   /**
    * Root directory containing the CSV and metadata files.
@@ -78,9 +88,9 @@ public abstract class TableCSVBase {
     Map<Class, ScalarFunction> classFunctionMapping) {
 
     ExpressionSeqBuilder builder = new ExpressionSeqBuilder();
-    for (Map.Entry<String, TypeInformation> field : tableSchema.getFields()) {
-      String fieldName = field.getKey();
-      TypeInformation fieldType = field.getValue();
+    outer: for (int i = 0; i < tableSchema.getFieldCount(); i++) {
+      String fieldName = tableSchema.getFieldName(i).get();
+      TypeInformation fieldType = tableSchema.getFieldType(i).get();
 
       /*
         Call scalar function on field if there is a mapping for corresponding fieldType class in
@@ -95,10 +105,10 @@ public abstract class TableCSVBase {
 
         if (fieldType.equals(paramTypeOfScalarFunction)) {
           builder.scalarFunctionCall(scalarFunction, fieldName).as(fieldName);
-          continue;
+          continue outer;
         }
       }
-      builder.field(fieldName);
+      builder.field(fieldName).as(fieldName);
     }
     return builder.buildSeq();
   }

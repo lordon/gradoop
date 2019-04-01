@@ -15,31 +15,43 @@
  */
 package org.gradoop.flink.model.impl.layouts.table;
 
-import com.google.common.collect.ImmutableMap;
+import org.apache.flink.table.api.TableSchema;
 import org.apache.flink.table.expressions.Expression;
 import org.gradoop.flink.model.impl.layouts.table.util.ExpressionSeqBuilder;
+import org.gradoop.flink.model.impl.layouts.table.util.TableUtils;
 import scala.collection.Seq;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 /**
  * Wrapper for a table based EPGM schema, which is basically a map: tableName->{@link TableSchema}
- * The schema is meant to be constant and therefore realized with an {@link ImmutableMap}.
  */
 public class TableSetSchema {
 
   /**
    * EPGM schema map
    */
-  private ImmutableMap<String, TableSchema> schema;
+  private Map<String, TableSchema> schema;
 
   /**
    * Constructor
    * @param schema immutable schema map
    */
-  public TableSetSchema(ImmutableMap<String, TableSchema> schema) {
-    this.schema = schema;
+  public TableSetSchema(Map<String, TableSchema> schema) {
+    this.schema = new HashMap<>();
+    this.schema.putAll(schema);
+  }
+
+  /**
+   * Adds given table schema for given table name to table set schema
+   *
+   * @param tableName name of new table
+   * @param tableSchema schema of new table
+   */
+  public void addTable(String tableName, TableSchema tableSchema) {
+    this.schema.put(tableName, tableSchema);
   }
 
   /**
@@ -68,10 +80,19 @@ public class TableSetSchema {
   /**
    * Returns a set of tableName,TableSchema pairs
    *
-   * @return set of pairs as {@link Map.Entry<String, TableSchema>}
+   * @return set of pairs as {@link Map.Entry<String, TableSchema >}
    */
   public Set<Map.Entry<String, TableSchema>> getTables() {
     return schema.entrySet();
+  }
+
+  /**
+   * Returns a set of table names as strings
+   *
+   * @return set of table names as strings
+   */
+  public Set<String> getTableNames() {
+    return schema.keySet();
   }
 
   /**
@@ -91,7 +112,7 @@ public class TableSetSchema {
    * @return comma separated fields names
    */
   public String commaSeparatedFieldNamesForTable(String tableName) {
-    return String.join(",", getFieldNamesForTable(tableName));
+    return TableUtils.commaSeparatedFieldNamesOfTableSchema(getTable(tableName));
   }
 
   /**

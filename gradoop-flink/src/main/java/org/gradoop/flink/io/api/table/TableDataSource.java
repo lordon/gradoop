@@ -18,8 +18,6 @@ package org.gradoop.flink.io.api.table;
 import org.gradoop.flink.model.impl.epgm.table.TableGraphCollection;
 import org.gradoop.flink.model.impl.epgm.table.TableLogicalGraph;
 
-import java.io.IOException;
-
 /**
  * Data source in analytical programs.
  */
@@ -30,12 +28,12 @@ public interface TableDataSource {
    *
    * @return logial graph
    */
-  TableLogicalGraph getLogicalGraph() throws IOException;
+  TableLogicalGraph getLogicalGraph() throws Exception;
 
   /**
    * Reads the input as graph collection.
    *
    * @return graph collection
    */
-  TableGraphCollection getGraphCollection() throws IOException;
+  TableGraphCollection getGraphCollection() throws Exception;
 }

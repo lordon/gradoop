@@ -269,7 +269,7 @@ public class Grouping extends TableGroupingBase<NormalizedTableSet, NormalizedTa
    * @return vertex property values table
    */
   private Table computeSuperVertexPropertyValues(Table groupedVertices) {
-    Table newVertexPropertyValues = tableSetFactory.getEmptyVertexPropertyValues();
+    Table newVertexPropertyValues = tableSetFactory.createEmptyVertexPropertyValuesTable();
 
     newVertexPropertyValues = computeGenericSuperVertexPropertyValues(groupedVertices,
       newVertexPropertyValues, getVertexAggregatedPropertyKeys(),
@@ -310,7 +310,7 @@ public class Grouping extends TableGroupingBase<NormalizedTableSet, NormalizedTa
    * @return edge property values table
    */
   private Table computeSuperEdgePropertyValues(Table groupedEdges) {
-    Table newEdgePropertyValues = tableSetFactory.getEmptyEdgePropertyValues();
+    Table newEdgePropertyValues = tableSetFactory.createEmptyEdgePropertyValuesTable();
 
     newEdgePropertyValues = computeGenericSuperEdgePropertyValues(groupedEdges,
       newEdgePropertyValues, getEdgeAggregatedPropertyKeys(),

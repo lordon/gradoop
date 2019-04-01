@@ -18,12 +18,12 @@ package org.gradoop.flink.model.impl.layouts.table.normalized;
 import com.google.common.collect.ImmutableMap;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.table.api.Table;
+import org.apache.flink.table.api.TableSchema;
 import org.apache.flink.table.api.Types;
 import org.apache.flink.table.expressions.Expression;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.properties.PropertyValue;
 import org.gradoop.flink.model.api.layouts.table.BaseTableSet;
-import org.gradoop.flink.model.impl.layouts.table.TableSchema;
 import org.gradoop.flink.model.impl.layouts.table.TableSetSchema;
 import org.gradoop.flink.model.impl.layouts.table.TableSet;
 import org.gradoop.flink.model.impl.layouts.table.gve.GVETableSet;
@@ -90,11 +90,11 @@ public class NormalizedTableSet extends GVETableSet implements BaseTableSet {
   /**
    * Table key of vertices-graphs table
    */
-  static final String TABLE_VERTICES_GRAPHS = "vertices_graphs";
+  public static final String TABLE_VERTICES_GRAPHS = "vertices_graphs";
   /**
    * Table key of edges-graphs table
    */
-  static final String TABLE_EDGES_GRAPHS = "edges_graphs";
+  public static final String TABLE_EDGES_GRAPHS = "edges_graphs";
   /**
    * Table key of vertex-property-values table
    */
@@ -113,43 +113,51 @@ public class NormalizedTableSet extends GVETableSet implements BaseTableSet {
    */
   static final TableSetSchema SCHEMA = new TableSetSchema(
     ImmutableMap.<String, TableSchema>builder()
-    .put(TABLE_VERTICES, new TableSchema(ImmutableMap.of(
-      FIELD_VERTEX_ID, TypeInformation.of(GradoopId.class),
-      FIELD_VERTEX_LABEL, Types.STRING()
-    )))
-    .put(TABLE_EDGES, new TableSchema(ImmutableMap.of(
-      FIELD_EDGE_ID, TypeInformation.of(GradoopId.class),
-      FIELD_TAIL_ID, TypeInformation.of(GradoopId.class),
-      FIELD_HEAD_ID, TypeInformation.of(GradoopId.class),
-      FIELD_EDGE_LABEL, Types.STRING()
-    )))
-    .put(TABLE_GRAPHS, new TableSchema(ImmutableMap.of(
-      FIELD_GRAPH_ID, TypeInformation.of(GradoopId.class),
-      FIELD_GRAPH_LABEL, Types.STRING()
-    )))
-    .put(TABLE_VERTICES_GRAPHS, new TableSchema(ImmutableMap.of(
-      FIELD_GRAPH_VERTEX_ID, TypeInformation.of(GradoopId.class),
-      FIELD_VERTEX_GRAPH_ID, TypeInformation.of(GradoopId.class)
-    )))
-    .put(TABLE_EDGES_GRAPHS, new TableSchema(ImmutableMap.of(
-      FIELD_GRAPH_EDGE_ID, TypeInformation.of(GradoopId.class),
-      FIELD_EDGE_GRAPH_ID, TypeInformation.of(GradoopId.class)
-    )))
-    .put(TABLE_VERTEX_PROPERTY_VALUES, new TableSchema(ImmutableMap.of(
-      FIELD_PROPERTY_VERTEX_ID, TypeInformation.of(GradoopId.class),
-      FIELD_VERTEX_PROPERTY_NAME, Types.STRING(),
-      FIELD_VERTEX_PROPERTY_VALUE, TypeInformation.of(PropertyValue.class)
-    )))
-    .put(TABLE_EDGE_PROPERTY_VALUES, new TableSchema(ImmutableMap.of(
-      FIELD_PROPERTY_EDGE_ID, TypeInformation.of(GradoopId.class),
-      FIELD_EDGE_PROPERTY_NAME, Types.STRING(),
-      FIELD_EDGE_PROPERTY_VALUE, TypeInformation.of(PropertyValue.class)
-    )))
-    .put(TABLE_GRAPH_PROPERTY_VALUES, new TableSchema(ImmutableMap.of(
-      FIELD_PROPERTY_GRAPH_ID, TypeInformation.of(GradoopId.class),
-      FIELD_GRAPH_PROPERTY_NAME, Types.STRING(),
-      FIELD_GRAPH_PROPERTY_VALUE, TypeInformation.of(PropertyValue.class)
-    )))
+    .put(TABLE_VERTICES, new TableSchema.Builder()
+      .field(FIELD_VERTEX_ID, TypeInformation.of(GradoopId.class))
+      .field(FIELD_VERTEX_LABEL, Types.STRING())
+      .build()
+    )
+    .put(TABLE_EDGES, new TableSchema.Builder()
+      .field(FIELD_EDGE_ID, TypeInformation.of(GradoopId.class))
+      .field(FIELD_TAIL_ID, TypeInformation.of(GradoopId.class))
+      .field(FIELD_HEAD_ID, TypeInformation.of(GradoopId.class))
+      .field(FIELD_EDGE_LABEL, Types.STRING())
+      .build()
+    )
+    .put(TABLE_GRAPHS, new TableSchema.Builder()
+      .field(FIELD_GRAPH_ID, TypeInformation.of(GradoopId.class))
+      .field(FIELD_GRAPH_LABEL, Types.STRING())
+      .build()
+    )
+    .put(TABLE_VERTICES_GRAPHS, new TableSchema.Builder()
+      .field(FIELD_GRAPH_VERTEX_ID, TypeInformation.of(GradoopId.class))
+      .field(FIELD_VERTEX_GRAPH_ID, TypeInformation.of(GradoopId.class))
+      .build()
+    )
+    .put(TABLE_EDGES_GRAPHS, new TableSchema.Builder()
+      .field(FIELD_GRAPH_EDGE_ID, TypeInformation.of(GradoopId.class))
+      .field(FIELD_EDGE_GRAPH_ID, TypeInformation.of(GradoopId.class))
+      .build()
+    )
+    .put(TABLE_VERTEX_PROPERTY_VALUES, new TableSchema.Builder()
+      .field(FIELD_PROPERTY_VERTEX_ID, TypeInformation.of(GradoopId.class))
+      .field(FIELD_VERTEX_PROPERTY_NAME, Types.STRING())
+      .field(FIELD_VERTEX_PROPERTY_VALUE, TypeInformation.of(PropertyValue.class))
+      .build()
+    )
+    .put(TABLE_EDGE_PROPERTY_VALUES, new TableSchema.Builder()
+      .field(FIELD_PROPERTY_EDGE_ID, TypeInformation.of(GradoopId.class))
+      .field(FIELD_EDGE_PROPERTY_NAME, Types.STRING())
+      .field(FIELD_EDGE_PROPERTY_VALUE, TypeInformation.of(PropertyValue.class))
+      .build()
+    )
+    .put(TABLE_GRAPH_PROPERTY_VALUES, new TableSchema.Builder()
+      .field(FIELD_PROPERTY_GRAPH_ID, TypeInformation.of(GradoopId.class))
+      .field(FIELD_GRAPH_PROPERTY_NAME, Types.STRING())
+      .field(FIELD_GRAPH_PROPERTY_VALUE, TypeInformation.of(PropertyValue.class))
+      .build()
+    )
     .build()
   );
 
@@ -166,6 +174,11 @@ public class NormalizedTableSet extends GVETableSet implements BaseTableSet {
    */
   public NormalizedTableSet(TableSet tableSet) {
     super(tableSet);
+  }
+
+  @Override
+  public TableSetSchema getSchema() {
+    return SCHEMA;
   }
 
   @Override

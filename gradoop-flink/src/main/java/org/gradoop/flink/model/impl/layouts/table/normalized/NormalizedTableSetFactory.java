@@ -15,21 +15,18 @@
  */
 package org.gradoop.flink.model.impl.layouts.table.normalized;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.tuple.Tuple2;
-import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.Types;
 import org.apache.flink.table.expressions.Expression;
 import org.apache.flink.table.expressions.Literal;
 import org.gradoop.common.model.impl.id.GradoopId;
-import org.gradoop.common.model.impl.properties.PropertyValue;
 import org.gradoop.common.util.GradoopConstants;
-import org.gradoop.flink.model.impl.functions.bool.False;
-import org.gradoop.flink.model.impl.layouts.table.BaseTableSetFactory;
 import org.gradoop.flink.io.impl.table.csv.functions.ParseGradoopId;
+import org.gradoop.flink.model.impl.layouts.table.BaseTableSetFactory;
 import org.gradoop.flink.model.impl.layouts.table.util.ExpressionSeqBuilder;
+import org.gradoop.flink.model.impl.layouts.table.util.TableUtils;
 import org.gradoop.flink.util.GradoopFlinkConfig;
 
 /**
@@ -106,7 +103,7 @@ public class NormalizedTableSetFactory extends BaseTableSetFactory {
     Table edgesGraphs = computeNewEdgesGraphs(edges, newGraphId);
 
     return fromTables(vertices, edges, graphs, verticesGraphs, edgesGraphs,
-      vertexPropertyValues, edgePropertyValues, getEmptyGraphPropertyValues());
+      vertexPropertyValues, edgePropertyValues, createEmptyGraphPropertyValuesTable());
   }
 
   /**
@@ -116,7 +113,7 @@ public class NormalizedTableSetFactory extends BaseTableSetFactory {
    * @param newGraphId new graph id
    * @return new graph table with a single row
    */
-  private Table computeNewGraphHead(GradoopId newGraphId) {
+  protected Table computeNewGraphHead(GradoopId newGraphId) {
     String newLabel = GradoopConstants.DEFAULT_GRAPH_LABEL;
     Tuple2<GradoopId, String> newGraphTuple = Tuple2.of(newGraphId, newLabel);
 
@@ -140,7 +137,7 @@ public class NormalizedTableSetFactory extends BaseTableSetFactory {
    * @param newGraphId new graph id
    * @return new vertices-graphs table
    */
-  private Table computeNewVerticesGraphs(Table vertices, GradoopId newGraphId) {
+  protected Table computeNewVerticesGraphs(Table vertices, GradoopId newGraphId) {
     return vertices
       .select(new ExpressionSeqBuilder()
         .field(NormalizedTableSet.FIELD_VERTEX_ID)
@@ -165,7 +162,7 @@ public class NormalizedTableSetFactory extends BaseTableSetFactory {
    * @param newGraphId new graph id
    * @return new edges-graphs table
    */
-  private Table computeNewEdgesGraphs(Table edges, GradoopId newGraphId) {
+  protected Table computeNewEdgesGraphs(Table edges, GradoopId newGraphId) {
     return edges
       .select(new ExpressionSeqBuilder()
         .field(NormalizedTableSet.FIELD_EDGE_ID)
@@ -183,9 +180,9 @@ public class NormalizedTableSetFactory extends BaseTableSetFactory {
    *
    * @return empty vertex-property-values table
    */
-  public Table getEmptyVertexPropertyValues() {
-    return getEmptyPropertyValues(NormalizedTableSet.SCHEMA
-      .commaSeparatedFieldNamesForTable(NormalizedTableSet.TABLE_VERTEX_PROPERTY_VALUES));
+  public Table createEmptyVertexPropertyValuesTable() {
+    return TableUtils.createEmptyTable(config,
+      NormalizedTableSet.SCHEMA.getTable(NormalizedTableSet.TABLE_VERTEX_PROPERTY_VALUES));
   }
 
   /**
@@ -193,9 +190,9 @@ public class NormalizedTableSetFactory extends BaseTableSetFactory {
    *
    * @return empty edge-property-values table
    */
-  public Table getEmptyEdgePropertyValues() {
-    return getEmptyPropertyValues(NormalizedTableSet.SCHEMA
-      .commaSeparatedFieldNamesForTable(NormalizedTableSet.TABLE_EDGE_PROPERTY_VALUES));
+  public Table createEmptyEdgePropertyValuesTable() {
+    return TableUtils.createEmptyTable(config,
+      NormalizedTableSet.SCHEMA.getTable(NormalizedTableSet.TABLE_EDGE_PROPERTY_VALUES));
   }
 
   /**
@@ -203,26 +200,9 @@ public class NormalizedTableSetFactory extends BaseTableSetFactory {
    *
    * @return empty graph-property-values table
    */
-  public Table getEmptyGraphPropertyValues() {
-    return getEmptyPropertyValues(NormalizedTableSet.SCHEMA
-      .commaSeparatedFieldNamesForTable(NormalizedTableSet.TABLE_GRAPH_PROPERTY_VALUES));
-  }
-
-  /**
-   * Returns an empty table with field types
-   * | GradoopId | String | PropertyValue |
-   * which gets projected to the given field names
-   *
-   * @param projectItemsString field names to project empty table to
-   * @return empty table
-   */
-  private Table getEmptyPropertyValues(String projectItemsString) {
-    DataSet<Tuple3<GradoopId, String, PropertyValue>> dataSet =
-      config.getExecutionEnvironment().fromElements(Tuple3.of(GradoopId.NULL_VALUE,
-        StringUtils.EMPTY, PropertyValue.NULL_VALUE));
-
-    return config.getTableEnvironment()
-      .fromDataSet(dataSet.filter(new False<>()), projectItemsString);
+  public Table createEmptyGraphPropertyValuesTable() {
+    return TableUtils.createEmptyTable(config,
+      NormalizedTableSet.SCHEMA.getTable(NormalizedTableSet.TABLE_GRAPH_PROPERTY_VALUES));
   }
 
 }

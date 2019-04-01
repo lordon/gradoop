@@ -16,7 +16,11 @@
 package org.gradoop.flink.io.impl.table.csv;
 
 import com.google.common.collect.ImmutableMap;
+import org.apache.flink.api.common.typeinfo.TypeInformation;
+import org.apache.flink.api.java.tuple.Tuple1;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.table.api.Table;
+import org.apache.flink.table.api.TableSchema;
 import org.apache.flink.table.api.Types;
 import org.apache.flink.table.api.java.BatchTableEnvironment;
 import org.apache.flink.table.functions.ScalarFunction;
@@ -30,7 +34,6 @@ import org.gradoop.flink.model.impl.epgm.table.TableGraphCollection;
 import org.gradoop.flink.model.impl.epgm.table.TableGraphCollectionFactory;
 import org.gradoop.flink.model.impl.epgm.table.TableLogicalGraph;
 import org.gradoop.flink.model.impl.epgm.table.TableLogicalGraphFactory;
-import org.gradoop.flink.model.impl.layouts.table.TableSchema;
 import org.gradoop.flink.model.impl.layouts.table.TableSet;
 import org.gradoop.flink.model.impl.layouts.table.TableSetSchema;
 import org.gradoop.flink.io.impl.table.csv.functions.ParseGradoopId;
@@ -39,7 +42,8 @@ import org.gradoop.flink.io.impl.table.csv.functions.ParseProperties;
 import org.gradoop.flink.io.impl.table.csv.functions.ParsePropertyValue;
 import org.gradoop.flink.util.GradoopFlinkConfig;
 
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -70,17 +74,61 @@ public class TableCSVDataSource extends TableCSVBase implements TableDataSource 
   }
 
   @Override
-  public TableLogicalGraph getLogicalGraph() throws IOException {
+  public TableLogicalGraph getLogicalGraph() throws Exception {
     TableLogicalGraphFactory factory = this.config.getTableLogicalGraphFactory();
-    TableSet tableSet = registerTables(factory.getSchema());
+    TableSet tableSet = registerTables(readSchema());
     return factory.fromTableSet(tableSet);
   }
 
   @Override
-  public TableGraphCollection getGraphCollection() throws IOException {
+  public TableGraphCollection getGraphCollection() throws Exception {
     TableGraphCollectionFactory factory = this.config.getTableGraphCollectionFactory();
-    TableSet tableSet = registerTables(factory.getSchema());
+    TableSet tableSet = registerTables(readSchema());
     return factory.fromTableSet(tableSet);
+  }
+
+  /**
+   * Reads table set schema from files.
+   *
+   * @return table set
+   * @throws Exception
+   */
+  private TableSetSchema readSchema() throws Exception {
+    String tablesPath = new StringBuilder()
+      .append(this.csvRoot)
+      .append(SCHEMA_DIR)
+      .append(FILE_NAME_TABLES)
+      .append(CSV_FILE_SUFFIX).toString();
+
+    // Read set of table names
+    List<Tuple1<String>> tableNamesTuples = config.getExecutionEnvironment()
+      .readCsvFile(tablesPath).types(String.class).setParallelism(1).collect();
+
+    HashMap<String, TableSchema> schemaMap = new HashMap<>();
+
+    for (Tuple1<String> tableNameTuple : tableNamesTuples) {
+      String tableName = tableNameTuple.f0;
+
+      String tablePath = new StringBuilder()
+        .append(this.csvRoot)
+        .append(SCHEMA_DIR)
+        .append(tableName)
+        .append(CSV_FILE_SUFFIX).toString();
+
+      TableSchema.Builder schemaBuilder = new TableSchema.Builder();
+
+      // Read table schema
+      List<Tuple2<String, String>> fields = config.getExecutionEnvironment()
+        .readCsvFile(tablePath).types(String.class, String.class).setParallelism(1).collect();
+
+      for (Tuple2<String, String> field : fields) {
+        schemaBuilder.field(field.f0, TypeInformation.of(Class.forName(field.f1)));
+      }
+
+      schemaMap.put(tableName, schemaBuilder.build());
+    }
+
+    return new TableSetSchema(schemaMap);
   }
 
   /**

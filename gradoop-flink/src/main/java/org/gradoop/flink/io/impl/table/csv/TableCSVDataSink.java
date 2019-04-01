@@ -17,8 +17,11 @@ package org.gradoop.flink.io.impl.table.csv;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
+import org.apache.flink.api.java.tuple.Tuple1;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.core.fs.FileSystem;
 import org.apache.flink.table.api.Table;
+import org.apache.flink.table.api.TableSchema;
 import org.apache.flink.table.api.Types;
 import org.apache.flink.table.api.java.BatchTableEnvironment;
 import org.apache.flink.table.functions.ScalarFunction;
@@ -33,7 +36,6 @@ import org.gradoop.flink.model.api.layouts.table.TableGraphCollectionLayout;
 import org.gradoop.flink.model.api.layouts.table.TableLogicalGraphLayout;
 import org.gradoop.flink.model.impl.epgm.table.TableGraphCollection;
 import org.gradoop.flink.model.impl.epgm.table.TableLogicalGraph;
-import org.gradoop.flink.model.impl.layouts.table.TableSchema;
 import org.gradoop.flink.model.impl.layouts.table.TableSetSchema;
 import org.gradoop.flink.io.impl.table.csv.functions.GradoopIdSetToBase64;
 import org.gradoop.flink.io.impl.table.csv.functions.GradoopIdToString;
@@ -42,8 +44,11 @@ import org.gradoop.flink.io.impl.table.csv.functions.PropertyValueToBase64;
 import org.gradoop.flink.util.GradoopFlinkConfig;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Data sink for {@link TableLogicalGraph} and {@link TableGraphCollection} writing separate
@@ -117,6 +122,7 @@ public class TableCSVDataSink extends TableCSVBase implements TableDataSink {
   /**
    * Writes a CSV file for each table of given table set. Each field is stored as string.
    * Table set needs to match schema of current layout!
+   * For table set and each table a simple schema file is written, too.
    *
    * @param tableSet table set to write
    * @param overwrite true, if existing files should be overwritten
@@ -128,7 +134,20 @@ public class TableCSVDataSink extends TableCSVBase implements TableDataSink {
     FileSystem.WriteMode writeMode =
       overwrite ? FileSystem.WriteMode.OVERWRITE : FileSystem.WriteMode.NO_OVERWRITE;
 
-    TableSetSchema schema = config.getTableGraphCollectionFactory().getSchema();
+    TableSetSchema schema = tableSet.getSchema();
+
+    // Write set of table names
+    Collection<Tuple1> tableNames = schema.getTableNames().stream()
+      .map(tableName -> Tuple1.of(tableName))
+      .collect(Collectors.toSet());
+
+    config.getExecutionEnvironment().fromCollection(tableNames).writeAsCsv(
+      new StringBuilder()
+        .append(csvRoot)
+        .append(SCHEMA_DIR)
+        .append(FILE_NAME_TABLES)
+        .append(CSV_FILE_SUFFIX)
+        .toString(), writeMode).setParallelism(1);
 
     // For each table in table set
     for (Map.Entry<String, Table> table : tableSet.entrySet()) {
@@ -152,9 +171,27 @@ public class TableCSVDataSink extends TableCSVBase implements TableDataSink {
         tableSink
       );
 
+      // Write table
       table.getValue()
         .select(buildProjectExpressions(tableSchema, TYPE_COMPOSER))
         .insertInto(outputTableName);
+
+      // Write table schema
+      Collection<Tuple2<String, String>> fieldTypeTuples = new ArrayList<>();
+      for (int i = 0; i < tableSchema.getFieldCount(); i++) {
+        fieldTypeTuples.add(Tuple2.of(
+          tableSchema.getFieldName(i).get(),
+          tableSchema.getFieldType(i).get().getTypeClass().getTypeName()
+        ));
+      }
+
+      config.getExecutionEnvironment().fromCollection(fieldTypeTuples).writeAsCsv(
+        new StringBuilder()
+          .append(csvRoot)
+          .append(SCHEMA_DIR)
+          .append(tableName)
+          .append(CSV_FILE_SUFFIX)
+          .toString(), writeMode).setParallelism(1);
     }
   }
 }

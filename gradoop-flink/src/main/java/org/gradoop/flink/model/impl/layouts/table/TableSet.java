@@ -46,4 +46,9 @@ public class TableSet extends HashMap<String, Table> implements BaseTableSet {
     putAll(tableSet);
   }
 
+
+  @Override
+  public TableSetSchema getSchema() {
+    throw new RuntimeException("No schema defined on generic TableSet!");
+  }
 }

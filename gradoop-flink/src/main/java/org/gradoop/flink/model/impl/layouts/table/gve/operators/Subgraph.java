@@ -39,7 +39,6 @@ public class Subgraph extends TableSubgraphBase<GVETableSet, GVETableSetFactory>
 
   @Override
   protected GVETableSet buildInducedTableSet(Table vertices, Table edges) {
-    tableSetFactory = new GVETableSetFactory(config);
     return tableSetFactory.fromTables(vertices, edges);
   }
 

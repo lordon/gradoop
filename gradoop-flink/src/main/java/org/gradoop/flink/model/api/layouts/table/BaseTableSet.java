@@ -16,6 +16,7 @@
 package org.gradoop.flink.model.api.layouts.table;
 
 import org.apache.flink.table.api.Table;
+import org.gradoop.flink.model.impl.layouts.table.TableSetSchema;
 
 import java.util.Map;
 
@@ -23,4 +24,12 @@ import java.util.Map;
  * Base interface for table sets. Each table set is basically a {@link Map<String, Table>}
  */
 public interface BaseTableSet extends Map<String, Table> {
+
+  /**
+   * Returns schema of current table set
+   *
+   * @return schema of current table set
+   */
+  TableSetSchema getSchema();
+
 }
