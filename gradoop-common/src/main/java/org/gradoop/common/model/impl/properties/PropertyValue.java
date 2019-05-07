@@ -22,8 +22,8 @@ import org.apache.flink.core.memory.DataOutputView;
 import org.apache.flink.core.memory.DataOutputViewStreamWrapper;
 import org.apache.flink.types.Value;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.exceptions.UnsupportedTypeException;
+import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.util.GradoopConstants;
 
 import java.io.ByteArrayInputStream;
@@ -36,8 +36,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -951,11 +951,14 @@ public class PropertyValue implements Value, Serializable, Comparable<PropertyVa
       result = this.getTime().compareTo(o.getTime());
     } else if (this.isDateTime() && o.isDateTime()) {
       result = this.getDateTime().compareTo(o.getDateTime());
-    } else if (this.isMap() || o.isMap() ||
-        this.isList() || o.isList() ||
-        this.isSet() || o.isSet()) {
+    } else if (this.isList() && o.isList()) {
+      result = PropertyValueUtils.Col.compare(this.getList(), o.getList());
+    } else if (this.isSet() && o.isSet()) {
+      result = PropertyValueUtils.Col.compare(this.getSet(), o.getSet());
+    } else if (this.isMap() || o.isMap()) {
       throw new UnsupportedOperationException(String.format(
-        "Method compareTo() is not supported for %s, %s", this.getClass(), o.getClass()));
+        "Method compareTo() is not supported for %s, %s", this.getObject().getClass(),
+        o.getObject().getClass()));
     } else {
       throw new IllegalArgumentException(String.format(
         "Incompatible types: %s, %s", this.getClass(), o.getClass()));

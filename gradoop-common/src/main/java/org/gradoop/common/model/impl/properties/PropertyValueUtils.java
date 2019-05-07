@@ -19,6 +19,7 @@ import org.gradoop.common.exceptions.UnsupportedTypeException;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Collection;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -654,6 +655,31 @@ public class PropertyValueUtils {
       validValue[0] = typeByte[0];
       System.arraycopy(valueBytes, 0, validValue, 1, valueBytes.length);
       return PropertyValue.fromRawBytes(validValue);
+    }
+  }
+
+  /**
+   * Collection utilities.
+   */
+  public static class Col {
+
+    /**
+     * Compares two collections by comparing collection sizes
+     *
+     * @param aValue first value
+     * @param bValue second value
+     *
+     * @return 0 if size of a is equal to size of b,
+     * < 0 if size of a is less than size of b
+     * and > 0 if size of a is greater than size of b
+     */
+    public static int compare(Collection aValue, Collection bValue) {
+      if (aValue.size() < bValue.size()) {
+        return -1;
+      } else if (aValue.size() > bValue.size()) {
+        return 1;
+      }
+      return 0;
     }
   }
 }
