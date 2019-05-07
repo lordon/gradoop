@@ -31,6 +31,12 @@ import org.gradoop.flink.io.impl.deprecated.json.JSONDataSink;
 import org.gradoop.flink.io.impl.deprecated.json.JSONDataSource;
 import org.gradoop.flink.model.impl.epgm.GraphCollection;
 import org.gradoop.flink.model.impl.epgm.LogicalGraph;
+import org.gradoop.flink.model.impl.layouts.table.gve.TableGVEGraphCollectionLayoutFactory;
+import org.gradoop.flink.model.impl.layouts.table.gve.TableGVELogicalGraphLayoutFactory;
+import org.gradoop.flink.model.impl.layouts.table.horizontal.TableHorizontalGraphCollectionLayoutFactory;
+import org.gradoop.flink.model.impl.layouts.table.horizontal.TableHorizontalLogicalGraphLayoutFactory;
+import org.gradoop.flink.model.impl.layouts.table.normalized.TableNormalizedGraphCollectionLayoutFactory;
+import org.gradoop.flink.model.impl.layouts.table.normalized.TableNormalizedLogicalGraphLayoutFactory;
 import org.gradoop.flink.util.GradoopFlinkConfig;
 import org.gradoop.flink.io.impl.deprecated.logicalgraphcsv.LogicalGraphCSVDataSource;
 import org.gradoop.flink.io.impl.deprecated.logicalgraphcsv.LogicalGraphIndexedCSVDataSource;
@@ -254,6 +260,32 @@ public abstract class AbstractRunner {
       return new IndexedCSVDataSink(directory, config);
     default:
       throw new IllegalArgumentException("Unsupported format: " + format);
+    }
+  }
+
+  /**
+   * Takes a gradoop configuration and sets table factories corresponding to given layout.
+   *
+   * @param layout table layout
+   * @param conf gradoop configuration
+   * @return given gradoop configuration with set factories
+   */
+  protected static GradoopFlinkConfig setTableFactories(String layout, GradoopFlinkConfig conf) {
+    switch (layout) {
+    case "gve":
+      conf.setTableGraphCollectionLayoutFactory(new TableGVEGraphCollectionLayoutFactory());
+      conf.setTableLogicalGraphLayoutFactory(new TableGVELogicalGraphLayoutFactory());
+      return conf;
+    case "normalized":
+      conf.setTableGraphCollectionLayoutFactory(new TableNormalizedGraphCollectionLayoutFactory());
+      conf.setTableLogicalGraphLayoutFactory(new TableNormalizedLogicalGraphLayoutFactory());
+      return conf;
+    case "horizontal":
+      conf.setTableGraphCollectionLayoutFactory(new TableHorizontalGraphCollectionLayoutFactory());
+      conf.setTableLogicalGraphLayoutFactory(new TableHorizontalLogicalGraphLayoutFactory());
+      return conf;
+    default:
+      throw new IllegalArgumentException("Unsupported layout: " + layout);
     }
   }
 }

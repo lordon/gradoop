@@ -17,6 +17,8 @@
   <suppress checks="IllegalCatch"
             files="TableHorizontalBaseLayoutFactory.java"
             lines="89-91"/>
+  <suppress checks="VisibilityModifier"
+            files="TableSetOperatorBaseBenchmark.java"/>
 
   <!-- less restrictive checkstyle for tests -->
   <suppress checks="JavadocMethod"
