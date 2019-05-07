@@ -77,20 +77,23 @@ public abstract class TableSubgraphBase<TS extends GVETableSet, TSF extends Base
 
     switch (strategy) {
     case BOTH:
-      newVertices = filterVertices();
-      newEdges = filterEdges();
+      newVertices = transformToQueryableResultTable(filterVertices());
+      newEdges = transformToQueryableResultTable(filterEdges());
       break;
     case BOTH_VERIFIED:
-      newVertices = filterVertices();
-      newEdges = computeNewVertexInducedEdges(filterEdges(), newVertices);
+      newVertices = transformToQueryableResultTable(filterVertices());
+      newEdges = transformToQueryableResultTable(
+        computeNewVertexInducedEdges(filterEdges(), newVertices));
       break;
     case VERTEX_INDUCED:
-      newVertices = filterVertices();
-      newEdges = computeNewVertexInducedEdges(tableSet.getEdges(), newVertices);
+      newVertices = transformToQueryableResultTable(filterVertices());
+      newEdges = transformToQueryableResultTable(
+        computeNewVertexInducedEdges(tableSet.getEdges(), newVertices));
       break;
     case EDGE_INDUCED:
-      newEdges = filterEdges();
-      newVertices = computeNewEdgeInducedVertices(tableSet.getVertices(), newEdges);
+      newEdges = transformToQueryableResultTable(filterEdges());
+      newVertices = transformToQueryableResultTable(
+        computeNewEdgeInducedVertices(tableSet.getVertices(), newEdges));
       break;
     case EDGE_INDUCED_PROJECT_FIRST:
       throw new NotImplementedException("Strategy " + EDGE_INDUCED_PROJECT_FIRST + "not " +
@@ -104,7 +107,7 @@ public abstract class TableSubgraphBase<TS extends GVETableSet, TSF extends Base
   }
 
   /**
-   * Computes new  based on filtered vertices and edges
+   * Computes new table set based on filtered vertices and edges
    *
    * @param vertices filtered vertices table
    * @param edges filtered edges table

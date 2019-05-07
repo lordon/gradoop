@@ -380,8 +380,12 @@ public abstract class TableGroupingBase<TS extends GVETableSet, TSF extends Base
     ExpressionSeqBuilder projectExpressionsBuilder = new ExpressionSeqBuilder()
       .field(GVETableSet.FIELD_EDGE_ID)
       .field(superVertexIdTail).as(GVETableSet.FIELD_TAIL_ID)
-      .field(superVertexIdHead).as(GVETableSet.FIELD_HEAD_ID)
-      .field(GVETableSet.FIELD_EDGE_LABEL);
+      .field(superVertexIdHead).as(GVETableSet.FIELD_HEAD_ID);
+
+    // optionally: edge_label
+    if (useEdgeLabels) {
+      projectExpressionsBuilder.field(GVETableSet.FIELD_EDGE_LABEL);
+    }
 
     for (Expression expression : additionalProjectExpressions) {
       projectExpressionsBuilder.expression(expression);

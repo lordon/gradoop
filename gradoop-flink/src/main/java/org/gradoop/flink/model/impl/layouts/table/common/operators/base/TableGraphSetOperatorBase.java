@@ -34,8 +34,8 @@ public abstract class TableGraphSetOperatorBase<
 
   @Override
   protected TableLogicalGraph computeNewLogicalGraph() {
-    Table newVertices = computeNewVertices();
-    Table newEdges = computeNewEdges(newVertices);
+    Table newVertices = transformToQueryableResultTable(computeNewVertices());
+    Table newEdges = transformToQueryableResultTable(computeNewEdges(newVertices));
 
     TS tableSet = buildInducedTableSet(newVertices, newEdges);
     return config.getTableLogicalGraphFactory().fromTableSet(tableSet);
