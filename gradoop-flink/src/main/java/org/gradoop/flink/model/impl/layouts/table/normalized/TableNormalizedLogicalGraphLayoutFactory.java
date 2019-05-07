@@ -22,7 +22,7 @@ import org.gradoop.common.model.impl.pojo.Vertex;
 import org.gradoop.flink.model.api.layouts.table.TableLogicalGraphLayout;
 import org.gradoop.flink.model.api.layouts.table.TableLogicalGraphLayoutFactory;
 import org.gradoop.flink.model.impl.layouts.table.TableSet;
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.ArrayList;
 
@@ -52,12 +52,12 @@ public class TableNormalizedLogicalGraphLayoutFactory extends TableNormalizedBas
 
   @Override
   public TableLogicalGraphLayout fromDataSets(DataSet<Vertex> vertices, DataSet<Edge> edges) {
-    throw new NotImplementedException();
+    throw new NotImplementedException("Not implemented");
   }
 
   @Override
   public TableLogicalGraphLayout createEmptyGraph() {
-    throw new NotImplementedException();
+    throw new NotImplementedException("Not implemented");
   }
 
 }

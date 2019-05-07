@@ -23,7 +23,7 @@ import org.gradoop.flink.model.api.layouts.table.TableGraphCollectionLayout;
 import org.gradoop.flink.model.api.layouts.table.TableGraphCollectionLayoutFactory;
 import org.gradoop.flink.model.impl.epgm.table.TableLogicalGraph;
 import org.gradoop.flink.model.impl.layouts.table.TableSet;
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.ArrayList;
 
@@ -53,17 +53,17 @@ public class TableNormalizedGraphCollectionLayoutFactory extends TableNormalized
 
   @Override
   public TableGraphCollectionLayout fromGraph(TableLogicalGraph logicalGraphLayout) {
-    throw new NotImplementedException();
+    throw new NotImplementedException("Not implemented");
   }
 
   @Override
   public TableGraphCollectionLayout fromGraphs(TableLogicalGraph... logicalGraphLayout) {
-    throw new NotImplementedException();
+    throw new NotImplementedException("Not implemented");
   }
 
   @Override
   public TableGraphCollectionLayout createEmptyCollection() {
-    throw new NotImplementedException();
+    throw new NotImplementedException("Not implemented");
   }
 
 }

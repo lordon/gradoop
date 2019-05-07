@@ -15,7 +15,7 @@
  */
 package org.gradoop.flink.model.impl.layouts.table.normalized;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.flink.api.java.DataSet;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.id.GradoopIdSet;
@@ -98,6 +98,6 @@ public class TableNormalizedGraphCollectionLayout extends TableNormalizedLayout 
 
   @Override
   public DataSet<Boolean> isEmpty() {
-    throw new NotImplementedException();
+    throw new NotImplementedException("Not implemented");
   }
 }

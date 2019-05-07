@@ -26,7 +26,7 @@ import org.gradoop.flink.model.impl.layouts.table.gve.operators.Difference;
 import org.gradoop.flink.model.impl.layouts.table.gve.operators.Intersection;
 import org.gradoop.flink.model.impl.layouts.table.gve.operators.Union;
 import org.gradoop.flink.util.GradoopFlinkConfig;
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 
 import java.io.IOException;
 
@@ -48,17 +48,17 @@ public class TableGVEGraphCollectionLayout extends TableGVELayout implements
 
   @Override
   public TableLogicalGraph getGraph(GradoopId graphID) {
-    throw new NotImplementedException();
+    throw new NotImplementedException("Not implemented");
   }
 
   @Override
   public TableGraphCollection getGraphs(GradoopId... identifiers) {
-    throw new NotImplementedException();
+    throw new NotImplementedException("Not implemented");
   }
 
   @Override
   public TableGraphCollection getGraphs(GradoopIdSet identifiers) {
-    throw new NotImplementedException();
+    throw new NotImplementedException("Not implemented");
   }
 
   @Override
@@ -73,7 +73,7 @@ public class TableGVEGraphCollectionLayout extends TableGVELayout implements
 
   @Override
   public TableGraphCollection intersectWithSmallResult(TableGraphCollection otherCollection) {
-    throw new NotImplementedException();
+    throw new NotImplementedException("Not implemented");
   }
 
   @Override
@@ -83,7 +83,7 @@ public class TableGVEGraphCollectionLayout extends TableGVELayout implements
 
   @Override
   public TableGraphCollection differenceWithSmallResult(TableGraphCollection otherCollection) {
-    throw new NotImplementedException();
+    throw new NotImplementedException("Not implemented");
   }
 
   @Override
@@ -98,6 +98,6 @@ public class TableGVEGraphCollectionLayout extends TableGVELayout implements
 
   @Override
   public DataSet<Boolean> isEmpty() {
-    throw new NotImplementedException();
+    throw new NotImplementedException("Not implemented");
   }
 }

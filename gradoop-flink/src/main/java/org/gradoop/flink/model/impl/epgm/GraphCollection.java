@@ -15,7 +15,7 @@
  */
 package org.gradoop.flink.model.impl.epgm;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.java.DataSet;
 import org.gradoop.common.model.impl.id.GradoopId;
@@ -226,7 +226,7 @@ public class GraphCollection implements
 
   @Override
   public GraphCollection sortBy(String propertyKey, Order order) {
-    throw new NotImplementedException();
+    throw new NotImplementedException("Not implemented");
   }
 
   @Override

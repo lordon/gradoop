@@ -15,7 +15,7 @@
  */
 package org.gradoop.flink.model.impl.layouts.table.horizontal;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.flink.api.java.DataSet;
 import org.gradoop.common.model.impl.pojo.Edge;
 import org.gradoop.common.model.impl.pojo.GraphHead;
@@ -51,11 +51,11 @@ public class TableHorizontalLogicalGraphLayoutFactory extends TableHorizontalBas
 
   @Override
   public TableLogicalGraphLayout fromDataSets(DataSet<Vertex> vertices, DataSet<Edge> edges) {
-    throw new NotImplementedException();
+    throw new NotImplementedException("Not implemented");
   }
 
   @Override
   public TableLogicalGraphLayout createEmptyGraph() {
-    throw new NotImplementedException();
+    throw new NotImplementedException("Not implemented");
   }
 }

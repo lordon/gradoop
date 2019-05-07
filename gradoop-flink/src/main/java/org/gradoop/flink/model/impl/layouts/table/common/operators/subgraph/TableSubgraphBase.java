@@ -15,7 +15,7 @@
  */
 package org.gradoop.flink.model.impl.layouts.table.common.operators.subgraph;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.flink.table.api.Table;
 import org.gradoop.flink.model.api.layouts.table.operators.TableUnaryGraphToGraphOperator;
 import org.gradoop.flink.model.impl.epgm.table.TableLogicalGraph;

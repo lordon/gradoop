@@ -16,7 +16,7 @@
 package org.gradoop.flink.model.impl.layouts.table.gve;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.flink.api.java.DataSet;
 import org.gradoop.flink.io.api.table.TableDataSink;
 import org.gradoop.flink.model.api.functions.AggregateFunction;
@@ -136,6 +136,6 @@ public class TableGVELogicalGraphLayout extends TableGVELayout implements
 
   @Override
   public DataSet<Boolean> isEmpty() {
-    throw new NotImplementedException();
+    throw new NotImplementedException("Not implemented");
   }
 }
