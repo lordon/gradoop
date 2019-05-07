@@ -43,6 +43,10 @@ public class PropertiesToBase64JsonString extends ScalarFunction {
    * @throws JSONException
    */
   public String eval(Properties properties) throws JSONException {
+    if (null == properties) {
+      properties = Properties.create();
+    }
+
     JSONObject data = new JSONObject();
 
     if (properties.size() > 0) {
