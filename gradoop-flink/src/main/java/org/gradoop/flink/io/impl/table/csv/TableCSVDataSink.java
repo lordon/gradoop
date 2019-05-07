@@ -159,7 +159,7 @@ public class TableCSVDataSink extends TableCSVBase implements TableDataSink {
       CsvTableSink tableSink = new CsvTableSink(path, CSV_FIELD_DELIMITER,
         config.getExecutionEnvironment().getParallelism(), writeMode);
 
-      String[] fieldNames = tableSchema.getFieldNames();
+      String[] fieldNames = tableSchema.getColumnNames();
       TypeInformation[] fieldTypes = new TypeInformation[fieldNames.length];
       Arrays.fill(fieldTypes, Types.STRING());
       // Name of output table must be unique
@@ -179,10 +179,10 @@ public class TableCSVDataSink extends TableCSVBase implements TableDataSink {
 
       // Write table schema
       Collection<Tuple2<String, String>> fieldTypeTuples = new ArrayList<>();
-      for (int i = 0; i < tableSchema.getFieldCount(); i++) {
+      for (int i = 0; i < tableSchema.getColumnCount(); i++) {
         fieldTypeTuples.add(Tuple2.of(
-          tableSchema.getFieldName(i).get(),
-          tableSchema.getFieldType(i).get().getTypeClass().getTypeName()
+          tableSchema.getColumnName(i).get(),
+          tableSchema.getType(i).get().getTypeClass().getTypeName()
         ));
       }
 

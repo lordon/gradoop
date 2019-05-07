@@ -102,7 +102,7 @@ public class TableSetSchema {
    * @return string array of field names
    */
   public String[] getFieldNamesForTable(String tableName) {
-    return getTable(tableName).getFieldNames();
+    return getTable(tableName).getColumnNames();
   }
 
   /**

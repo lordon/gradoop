@@ -19,6 +19,7 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.TableSchema;
+import org.apache.flink.table.api.TableSchemaBuilder;
 import org.apache.flink.table.api.Types;
 import org.apache.flink.table.api.java.BatchTableEnvironment;
 import org.apache.flink.table.functions.ScalarFunction;
@@ -137,7 +138,7 @@ public class TableCSVDataSource extends TableCSVBase implements TableDataSource 
   private TableSchema readTableSchema(String tableName, FileSystem fs, Charset charset)
     throws Exception {
 
-    TableSchema.Builder schemaBuilder = new TableSchema.Builder();
+    TableSchemaBuilder schemaBuilder = new TableSchemaBuilder();
 
     Path tablePath = new Path(new StringBuilder()
       .append(this.csvRoot)
@@ -188,7 +189,7 @@ public class TableCSVDataSource extends TableCSVBase implements TableDataSource 
       CsvTableSource.Builder sourceBuilder = CsvTableSource.builder().path(path);
 
       // Each field is expected to be a string
-      for (String fieldName : tableSchema.getFieldNames()) {
+      for (String fieldName : tableSchema.getColumnNames()) {
         sourceBuilder.field(fieldName, Types.STRING());
       }
 

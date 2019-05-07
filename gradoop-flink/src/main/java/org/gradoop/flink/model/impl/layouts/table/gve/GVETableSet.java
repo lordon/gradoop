@@ -19,6 +19,7 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.TableSchema;
+import org.apache.flink.table.api.TableSchemaBuilder;
 import org.apache.flink.table.api.Types;
 import org.apache.flink.table.expressions.Expression;
 import org.gradoop.common.model.impl.id.GradoopId;
@@ -105,14 +106,14 @@ public class GVETableSet extends TableSet implements BaseTableSet {
    */
   static final TableSetSchema SCHEMA = new TableSetSchema(
     ImmutableMap.<String, TableSchema>builder()
-      .put(TABLE_VERTICES, new TableSchema.Builder()
+      .put(TABLE_VERTICES, new TableSchemaBuilder()
         .field(FIELD_VERTEX_ID, TypeInformation.of(GradoopId.class))
         .field(FIELD_VERTEX_LABEL, Types.STRING())
         .field(FIELD_VERTEX_GRAPH_IDS, TypeInformation.of(GradoopIdSet.class))
         .field(FIELD_VERTEX_PROPERTIES, TypeInformation.of(Properties.class))
         .build()
       )
-      .put(TABLE_EDGES, new TableSchema.Builder()
+      .put(TABLE_EDGES, new TableSchemaBuilder()
         .field(FIELD_EDGE_ID, TypeInformation.of(GradoopId.class))
         .field(FIELD_TAIL_ID, TypeInformation.of(GradoopId.class))
         .field(FIELD_HEAD_ID, TypeInformation.of(GradoopId.class))
@@ -121,7 +122,7 @@ public class GVETableSet extends TableSet implements BaseTableSet {
         .field(FIELD_EDGE_PROPERTIES, TypeInformation.of(Properties.class))
         .build()
       )
-      .put(TABLE_GRAPHS, new TableSchema.Builder()
+      .put(TABLE_GRAPHS, new TableSchemaBuilder()
         .field(FIELD_GRAPH_ID, TypeInformation.of(GradoopId.class))
         .field(FIELD_GRAPH_LABEL, Types.STRING())
         .field(FIELD_GRAPH_PROPERTIES, TypeInformation.of(Properties.class))

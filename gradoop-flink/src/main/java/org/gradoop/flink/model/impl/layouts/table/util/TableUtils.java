@@ -73,7 +73,7 @@ public class TableUtils {
    * @return comma separated fields names of given table schema
    */
   public static String commaSeparatedFieldNamesOfTableSchema(TableSchema tableSchema) {
-    return String.join(",", tableSchema.getFieldNames());
+    return String.join(",", tableSchema.getColumnNames());
   }
 
   /**

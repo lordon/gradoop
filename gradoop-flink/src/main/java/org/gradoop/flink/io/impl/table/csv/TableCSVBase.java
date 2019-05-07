@@ -88,9 +88,9 @@ public abstract class TableCSVBase {
     Map<Class, ScalarFunction> classFunctionMapping) {
 
     ExpressionSeqBuilder builder = new ExpressionSeqBuilder();
-    outer: for (int i = 0; i < tableSchema.getFieldCount(); i++) {
-      String fieldName = tableSchema.getFieldName(i).get();
-      TypeInformation fieldType = tableSchema.getFieldType(i).get();
+    outer: for (int i = 0; i < tableSchema.getColumnCount(); i++) {
+      String fieldName = tableSchema.getColumnName(i).get();
+      TypeInformation fieldType = tableSchema.getType(i).get();
 
       /*
         Call scalar function on field if there is a mapping for corresponding fieldType class in

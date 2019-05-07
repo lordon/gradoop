@@ -18,6 +18,7 @@ package org.gradoop.flink.model.impl.layouts.table.horizontal;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.TableSchema;
+import org.apache.flink.table.api.TableSchemaBuilder;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.properties.PropertyValue;
 import org.gradoop.flink.model.impl.layouts.table.util.TableUtils;
@@ -123,7 +124,7 @@ public class PropertyTable {
    * @return table schema
    */
   public static TableSchema buildPropertyTableSchema(String propertyKey) {
-    return new TableSchema.Builder()
+    return new TableSchemaBuilder()
       .field(String.format(FIELD_ELEMENT_ID_TEMPLATE, propertyKey),
         TypeInformation.of(GradoopId.class))
       .field(String.format(FIELD_PROPERTY_VALUE_TEMPLATE, propertyKey),

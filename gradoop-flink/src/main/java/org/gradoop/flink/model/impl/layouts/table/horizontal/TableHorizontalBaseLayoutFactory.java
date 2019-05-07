@@ -99,7 +99,7 @@ public class TableHorizontalBaseLayoutFactory extends BaseFactory
         .map(new Project3To0And2<>());
 
       Table propertyValuesTable = dataSetToTable(propertyValuesDataSet,
-        String.join(",", tableSchema.getFieldNames()));
+        String.join(",", tableSchema.getColumnNames()));
 
       propertyTables.add(new PropertyTable(propertyKey, propertyValuesTable));
     }
