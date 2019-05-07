@@ -69,6 +69,15 @@ public class ExpressionSeqBuilder extends ExpressionBuilder {
   }
 
   /**
+   * Returns java list of expressions built with this builder
+   * @return java list of expressions
+   */
+  public List<Expression> buildList() {
+    appendIfNewExpression();
+    return this.expressions;
+  }
+
+  /**
    * Returns true if there is no expression built yet
    *
    * @return true if there is no expression built yet

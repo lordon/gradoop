@@ -32,7 +32,6 @@ import org.gradoop.flink.model.impl.layouts.table.common.functions.table.scalar.
 import org.gradoop.flink.model.impl.layouts.table.common.functions.table.scalar.ToProperties;
 import org.gradoop.flink.model.impl.layouts.table.gve.GVETableSet;
 import org.gradoop.flink.model.impl.layouts.table.gve.GVETableSetFactory;
-import org.gradoop.flink.model.impl.layouts.table.util.ExpressionBuilder;
 import org.gradoop.flink.model.impl.layouts.table.util.ExpressionSeqBuilder;
 import scala.collection.Seq;
 
@@ -107,11 +106,9 @@ public class Grouping extends TableGroupingBase<GVETableSet, GVETableSetFactory>
     Table edgesWithSupervertices = enrichEdges(tableSet.getEdges(), expandedVertices);
 
     // 6. Group edges by label and/or property values
-    Table groupedEdges = transformToQueryableResultTable(
-      extractEdgePropertyValuesAsColums(edgesWithSupervertices)
+    Table groupedEdges = edgesWithSupervertices
         .groupBy(buildEdgeGroupExpressions())
-        .select(buildEdgeProjectExpressions())
-    );
+        .select(buildEdgeProjectExpressions());
 
     // 7. Derive new super edges from grouped edges
     Table newEdges = transformToQueryableResultTable(
@@ -159,51 +156,6 @@ public class Grouping extends TableGroupingBase<GVETableSet, GVETableSetFactory>
     }
 
     return tableSet.getVertices().select(builder.buildSeq());
-  }
-
-  /**
-   * Projects needed property values from properties instance into own fields for each property.
-   *
-   * @param edges original edge table
-   * @return prepared edge table
-   */
-  private Table extractEdgePropertyValuesAsColums(Table edges) {
-    ExpressionSeqBuilder builder = new ExpressionSeqBuilder();
-
-    // edge_id, tail_id, head_id
-    builder
-      .field(GVETableSet.FIELD_EDGE_ID)
-      .field(GVETableSet.FIELD_TAIL_ID)
-      .field(GVETableSet.FIELD_HEAD_ID);
-
-    // optionally: edge_label
-    if (useEdgeLabels) {
-      builder.field(GVETableSet.FIELD_EDGE_LABEL);
-    }
-
-    // grouping_property_1 AS tmp_e1, ... , grouping_property_k AS tmp_ek
-    for (String propertyKey : edgeGroupingPropertyKeys) {
-      String propertyColumnName = tableEnv.createUniqueAttributeName();
-      builder
-        .scalarFunctionCall(new ExtractPropertyValue(propertyKey),
-          GVETableSet.FIELD_EDGE_PROPERTIES)
-        .as(propertyColumnName);
-      edgeGroupingPropertyFieldNames.put(propertyKey, propertyColumnName);
-    }
-
-    // property_to_aggregate_1 AS tmp_f1, ... , property_to_aggregate_l AS tmp_fl
-    for (AggregateFunction aggregateFunction : edgeAggregateFunctions) {
-      if (null != aggregateFunction.getPropertyKey()) {
-        String propertyColumnName = tableEnv.createUniqueAttributeName();
-        builder.scalarFunctionCall(new ExtractPropertyValue(aggregateFunction.getPropertyKey()),
-          GVETableSet.FIELD_EDGE_PROPERTIES)
-          .as(propertyColumnName);
-        edgeAggregationPropertyFieldNames.put(aggregateFunction.getAggregatePropertyKey(),
-          propertyColumnName);
-      }
-    }
-
-    return edges.select(builder.buildSeq());
   }
 
   /**
@@ -310,11 +262,32 @@ public class Grouping extends TableGroupingBase<GVETableSet, GVETableSetFactory>
   protected Table enrichEdges(Table edges, Table expandedVertices,
     Expression... additionalProjectExpressions) {
 
-    ExpressionBuilder builder = new ExpressionBuilder();
+    ExpressionSeqBuilder builder = new ExpressionSeqBuilder();
+
+    // grouping_property_1 AS tmp_e1, ... , grouping_property_k AS tmp_ek
+    for (String propertyKey : edgeGroupingPropertyKeys) {
+      String propertyColumnName = tableEnv.createUniqueAttributeName();
+      builder
+        .scalarFunctionCall(new ExtractPropertyValue(propertyKey),
+          GVETableSet.FIELD_EDGE_PROPERTIES)
+        .as(propertyColumnName);
+      edgeGroupingPropertyFieldNames.put(propertyKey, propertyColumnName);
+    }
+
+    // property_to_aggregate_1 AS tmp_f1, ... , property_to_aggregate_l AS tmp_fl
+    for (AggregateFunction aggregateFunction : edgeAggregateFunctions) {
+      if (null != aggregateFunction.getPropertyKey()) {
+        String propertyColumnName = tableEnv.createUniqueAttributeName();
+        builder.scalarFunctionCall(new ExtractPropertyValue(aggregateFunction.getPropertyKey()),
+          GVETableSet.FIELD_EDGE_PROPERTIES)
+          .as(propertyColumnName);
+        edgeAggregationPropertyFieldNames.put(aggregateFunction.getAggregatePropertyKey(),
+          propertyColumnName);
+      }
+    }
+
     return super.enrichEdges(edges, expandedVertices,
-      builder.field(GVETableSet.FIELD_EDGE_GRAPH_IDS).toExpression(),
-      builder.field(GVETableSet.FIELD_EDGE_PROPERTIES).toExpression()
-    );
+      builder.buildList().toArray(new Expression[0]));
   }
 
   /**
