@@ -34,8 +34,8 @@ public class Union extends NormalizedCollectionSetOperatorBase {
      New logic: UNIONs are performed on each table.
       */
     Table newGraphs = computeNewGraphHeads(newGraphIds);
-    Table newVerticesGraphs = computeTempVerticesGraphs(newGraphs);
-    Table newEdgesGraphs = computeTempEdgesGraphs(newGraphs);
+    Table newVerticesGraphs = computeNewVerticesGraphs();
+    Table newEdgesGraphs = computeNewEdgesGraphs();
     Table newVertices = computeNewVertices(newVerticesGraphs);
     Table newEdges = computeNewEdges(newEdgesGraphs);
     Table newVertexPropertyValues = computeNewVertexPropertyValues(newVertices);
