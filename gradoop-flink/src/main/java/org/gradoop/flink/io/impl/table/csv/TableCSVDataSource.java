@@ -17,33 +17,37 @@ package org.gradoop.flink.io.impl.table.csv;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
-import org.apache.flink.api.java.tuple.Tuple1;
-import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.TableSchema;
 import org.apache.flink.table.api.Types;
 import org.apache.flink.table.api.java.BatchTableEnvironment;
 import org.apache.flink.table.functions.ScalarFunction;
 import org.apache.flink.table.sources.CsvTableSource;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.id.GradoopIdSet;
 import org.gradoop.common.model.impl.properties.Properties;
 import org.gradoop.common.model.impl.properties.PropertyValue;
 import org.gradoop.flink.io.api.table.TableDataSource;
+import org.gradoop.flink.io.impl.table.csv.functions.ParseGradoopId;
+import org.gradoop.flink.io.impl.table.csv.functions.ParseGradoopIdSet;
+import org.gradoop.flink.io.impl.table.csv.functions.ParseProperties;
+import org.gradoop.flink.io.impl.table.csv.functions.ParsePropertyValue;
 import org.gradoop.flink.model.impl.epgm.table.TableGraphCollection;
 import org.gradoop.flink.model.impl.epgm.table.TableGraphCollectionFactory;
 import org.gradoop.flink.model.impl.epgm.table.TableLogicalGraph;
 import org.gradoop.flink.model.impl.epgm.table.TableLogicalGraphFactory;
 import org.gradoop.flink.model.impl.layouts.table.TableSet;
 import org.gradoop.flink.model.impl.layouts.table.TableSetSchema;
-import org.gradoop.flink.io.impl.table.csv.functions.ParseGradoopId;
-import org.gradoop.flink.io.impl.table.csv.functions.ParseGradoopIdSet;
-import org.gradoop.flink.io.impl.table.csv.functions.ParseProperties;
-import org.gradoop.flink.io.impl.table.csv.functions.ParsePropertyValue;
 import org.gradoop.flink.util.GradoopFlinkConfig;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -94,41 +98,72 @@ public class TableCSVDataSource extends TableCSVBase implements TableDataSource 
    * @throws Exception
    */
   private TableSetSchema readSchema() throws Exception {
-    String tablesPath = new StringBuilder()
-      .append(this.csvRoot)
-      .append(SCHEMA_DIR)
-      .append(FILE_NAME_TABLES)
-      .append(CSV_FILE_SUFFIX).toString();
-
-    // Read set of table names
-    List<Tuple1<String>> tableNamesTuples = config.getExecutionEnvironment()
-      .readCsvFile(tablesPath).types(String.class).setParallelism(1).collect();
+    FileSystem fs = FileSystem.get(new Configuration());
+    Charset charset = Charset.forName("UTF-8");
 
     HashMap<String, TableSchema> schemaMap = new HashMap<>();
 
-    for (Tuple1<String> tableNameTuple : tableNamesTuples) {
-      String tableName = tableNameTuple.f0;
+    Path tablesPath = new Path(new StringBuilder()
+      .append(this.csvRoot)
+      .append(SCHEMA_DIR)
+      .append(FILE_NAME_TABLES)
+      .append(CSV_FILE_SUFFIX).toString());
 
-      String tablePath = new StringBuilder()
-        .append(this.csvRoot)
-        .append(SCHEMA_DIR)
-        .append(tableName)
-        .append(CSV_FILE_SUFFIX).toString();
-
-      TableSchema.Builder schemaBuilder = new TableSchema.Builder();
-
-      // Read table schema
-      List<Tuple2<String, String>> fields = config.getExecutionEnvironment()
-        .readCsvFile(tablePath).types(String.class, String.class).setParallelism(1).collect();
-
-      for (Tuple2<String, String> field : fields) {
-        schemaBuilder.field(field.f0, TypeInformation.of(Class.forName(field.f1)));
+    if (!fs.exists(tablesPath)) {
+      throw new FileNotFoundException(tablesPath.getName());
+    } else {
+      try (BufferedReader reader = new BufferedReader(
+        new InputStreamReader(fs.open(tablesPath), charset))) {
+        String tableName;
+        while ((tableName = reader.readLine()) != null) {
+          TableSchema schema = readTableSchema(tableName, fs, charset);
+          schemaMap.put(tableName, schema);
+        }
       }
-
-      schemaMap.put(tableName, schemaBuilder.build());
     }
 
     return new TableSetSchema(schemaMap);
+  }
+
+  /**
+   * Reads schema of specified table.
+   *
+   * @param tableName name of table to read schema of
+   * @param fs file system instance
+   * @param charset charset
+   * @return table schema of specified table
+   * @throws Exception
+   */
+  private TableSchema readTableSchema(String tableName, FileSystem fs, Charset charset)
+    throws Exception {
+
+    TableSchema.Builder schemaBuilder = new TableSchema.Builder();
+
+    Path tablePath = new Path(new StringBuilder()
+      .append(this.csvRoot)
+      .append(SCHEMA_DIR)
+      .append(tableName)
+      .append(CSV_FILE_SUFFIX).toString());
+
+    if (!fs.exists(tablePath)) {
+      throw new FileNotFoundException(tablePath.getName());
+    } else {
+      try (BufferedReader reader = new BufferedReader(
+        new InputStreamReader(fs.open(tablePath), charset))) {
+        String line;
+        while ((line = reader.readLine()) != null) {
+          String[] field = line.split(CSV_FIELD_DELIMITER);
+
+          if (field.length != 2) {
+            throw new RuntimeException("Bad schema line " + line);
+          }
+
+          schemaBuilder.field(field[0], TypeInformation.of(Class.forName(field[1])));
+        }
+      }
+    }
+
+    return schemaBuilder.build();
   }
 
   /**
@@ -152,7 +187,7 @@ public class TableCSVDataSource extends TableCSVBase implements TableDataSource 
 
       CsvTableSource.Builder sourceBuilder = CsvTableSource.builder().path(path);
 
-      // Each column is expected to be a string
+      // Each field is expected to be a string
       for (String fieldName : tableSchema.getFieldNames()) {
         sourceBuilder.field(fieldName, Types.STRING());
       }

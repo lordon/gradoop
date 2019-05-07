@@ -130,7 +130,6 @@ public class TableCSVDataSink extends TableCSVBase implements TableDataSink {
   private void writeTableSet(BaseTableSet tableSet, boolean overwrite) throws IOException {
     BatchTableEnvironment env = config.getTableEnvironment();
 
-    int numFiles = 1; // TODO
     FileSystem.WriteMode writeMode =
       overwrite ? FileSystem.WriteMode.OVERWRITE : FileSystem.WriteMode.NO_OVERWRITE;
 
@@ -147,16 +146,18 @@ public class TableCSVDataSink extends TableCSVBase implements TableDataSink {
         .append(SCHEMA_DIR)
         .append(FILE_NAME_TABLES)
         .append(CSV_FILE_SUFFIX)
-        .toString(), writeMode).setParallelism(1);
+        .toString(), writeMode);
 
     // For each table in table set
     for (Map.Entry<String, Table> table : tableSet.entrySet()) {
       String tableName = table.getKey();
       TableSchema tableSchema = schema.getTable(tableName);
 
+      // Instantiate table sink
       String path =
         new StringBuilder().append(csvRoot).append(tableName).append(CSV_FILE_SUFFIX).toString();
-      CsvTableSink tableSink = new CsvTableSink(path, CSV_FIELD_DELIMITER, numFiles, writeMode);
+      CsvTableSink tableSink = new CsvTableSink(path, CSV_FIELD_DELIMITER,
+        config.getExecutionEnvironment().getParallelism(), writeMode);
 
       String[] fieldNames = tableSchema.getFieldNames();
       TypeInformation[] fieldTypes = new TypeInformation[fieldNames.length];
@@ -191,7 +192,7 @@ public class TableCSVDataSink extends TableCSVBase implements TableDataSink {
           .append(SCHEMA_DIR)
           .append(tableName)
           .append(CSV_FILE_SUFFIX)
-          .toString(), writeMode).setParallelism(1);
+          .toString(), writeMode);
     }
   }
 }
