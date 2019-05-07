@@ -30,11 +30,17 @@ public abstract class NormalizedCollectionSetOperatorBase
 
   @Override
   protected NormalizedTableSet buildInducedTableSet(Table newGraphIds) {
-    Table newGraphs = computeNewGraphHeads(newGraphIds);
+    if (null != newGraphIds) {
+      newGraphIds = transformToQueryableResultTable(newGraphIds);
+    }
+
+    Table newGraphs = transformToQueryableResultTable(computeNewGraphHeads(newGraphIds));
     Table newVerticesGraphs = firstTableSet.getVerticesGraphs();
     Table newEdgesGraphs = firstTableSet.getEdgesGraphs();
-    Table newVertices = computeNewVertices(computeTempVerticesGraphs(newGraphs));
-    Table newEdges = computeNewEdges(computeTempEdgesGraphs(newGraphs));
+    Table newVertices =
+      transformToQueryableResultTable(computeNewVertices(newGraphIds));
+    Table newEdges =
+      transformToQueryableResultTable(computeNewEdges(newGraphIds));
     Table newVertexPropertyValues = computeNewVertexPropertyValues(newVertices);
     Table newEdgePropertyValues = computeNewEdgePropertyValues(newEdges);
     Table newGraphPropertyValues = computeNewGraphPropertyValues(newGraphs);
@@ -62,47 +68,20 @@ public abstract class NormalizedCollectionSetOperatorBase
   }
 
   /**
-   * Returns a temporary vertices-graphs table by joining vertices-graphs of first table set with
-   * given table of graphs
-   *
-   * @param newGraphs table of graphs
-   * @return vertices-graphs table
-   */
-  protected Table computeTempVerticesGraphs(Table newGraphs) {
-    return firstTableSet.projectToVerticesGraphs(
-      firstTableSet.getVerticesGraphs()
-        .join(newGraphs, builder
-          .field(NormalizedTableSet.FIELD_GRAPH_ID)
-          .equalTo(NormalizedTableSet.FIELD_VERTEX_GRAPH_ID).toExpression())
-    );
-  }
-
-  /**
-   * Returns a temporary edges-graphs table by joining edges-graphs of first table set with given
-   * table of graphs
-   *
-   * @param newGraphs table of graphs
-   * @return edges-graphs table
-   */
-  protected Table computeTempEdgesGraphs(Table newGraphs) {
-    return firstTableSet.projectToEdgesGraphs(
-      firstTableSet.getEdgesGraphs()
-        .join(newGraphs, builder
-          .field(NormalizedTableSet.FIELD_GRAPH_ID)
-          .equalTo(NormalizedTableSet.FIELD_EDGE_GRAPH_ID).toExpression())
-    );
-  }
-
-  /**
    * Returns a new vertices table by joining vertices of first table set with given table of
    * vertices-graphs
    *
-   * @param newVerticesGraphs table of vertices-graphs
+   * @param newGraphIds table of graph ids
    * @return vertices table
    */
-  protected Table computeNewVertices(Table newVerticesGraphs) {
-    Table vertexIds = newVerticesGraphs
+  protected Table computeNewVertices(Table newGraphIds) {
+    Table vertexIds = firstTableSet.getVerticesGraphs()
+      .join(newGraphIds, builder
+        .field(NormalizedTableSet.FIELD_GRAPH_ID)
+        .equalTo(NormalizedTableSet.FIELD_VERTEX_GRAPH_ID).toExpression()
+      )
       .select(NormalizedTableSet.FIELD_GRAPH_VERTEX_ID).distinct();
+
     return firstTableSet.projectToVertices(
       firstTableSet.getVertices()
         .join(vertexIds, builder
@@ -115,12 +94,17 @@ public abstract class NormalizedCollectionSetOperatorBase
    * Returns a new edges table by joining edges of first table set with given table of
    * edges-graphs
    *
-   * @param newEdgesGraphs table of edges-graphs
+   * @param newGraphIds table of graph ids
    * @return edges table
    */
-  protected Table computeNewEdges(Table newEdgesGraphs) {
-    Table edgeIds = newEdgesGraphs
+  protected Table computeNewEdges(Table newGraphIds) {
+    Table edgeIds = firstTableSet.getEdgesGraphs()
+      .join(newGraphIds, builder
+        .field(NormalizedTableSet.FIELD_GRAPH_ID)
+        .equalTo(NormalizedTableSet.FIELD_EDGE_GRAPH_ID).toExpression()
+      )
       .select(NormalizedTableSet.FIELD_GRAPH_EDGE_ID).distinct();
+
     return firstTableSet.projectToEdges(firstTableSet.getEdges()
       .join(edgeIds, builder
         .field(NormalizedTableSet.FIELD_EDGE_ID)

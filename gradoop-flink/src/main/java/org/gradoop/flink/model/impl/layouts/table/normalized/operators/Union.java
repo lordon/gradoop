@@ -57,14 +57,24 @@ public class Union extends NormalizedCollectionSetOperatorBase {
       .union(otherTableSet.getGraphs());
   }
 
-  @Override
-  protected Table computeTempVerticesGraphs(Table newGraphs) {
+  /**
+   * Computes new vertices_graphs table by performing an UNION on vertices_graphs of both input
+   * graph collections
+   *
+   * @return unioned vertices_graphs tables
+   */
+  private Table computeNewVerticesGraphs() {
     return firstTableSet.getVerticesGraphs()
       .union(otherTableSet.getVerticesGraphs());
   }
 
-  @Override
-  protected Table computeTempEdgesGraphs(Table newGraphs) {
+  /**
+   * Computes new edges_graphs table by performing an UNION on edges_graphs of both input
+   * graph collections
+   *
+   * @return unioned edges_graphs tables
+   */
+  private Table computeNewEdgesGraphs() {
     return firstTableSet.getEdgesGraphs()
       .union(otherTableSet.getEdgesGraphs());
   }

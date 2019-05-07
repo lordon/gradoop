@@ -16,8 +16,8 @@
 package org.gradoop.flink.model.impl.layouts.table.gve.operators.base;
 
 import org.apache.flink.table.api.Table;
-import org.gradoop.flink.model.impl.layouts.table.common.operators.base.TableCollectionSetOperatorBase;
 import org.gradoop.flink.model.impl.layouts.table.common.functions.table.table.ExpandGradoopIdSet;
+import org.gradoop.flink.model.impl.layouts.table.common.operators.base.TableCollectionSetOperatorBase;
 import org.gradoop.flink.model.impl.layouts.table.gve.GVETableSet;
 import org.gradoop.flink.model.impl.layouts.table.gve.GVETableSetFactory;
 import org.gradoop.flink.model.impl.layouts.table.util.ExpressionSeqBuilder;
@@ -32,6 +32,10 @@ public abstract class GVECollectionSetOperatorBase
 
   @Override
   protected GVETableSet buildInducedTableSet(Table newGraphIds) {
+    if (null != newGraphIds) {
+      newGraphIds = transformToQueryableResultTable(newGraphIds);
+    }
+
     Table newGraphHeads = computeNewGraphHeads(newGraphIds);
     Table newVertices = computeNewVertices(newGraphIds);
     Table newEdges = computeNewEdges(newGraphIds);
@@ -85,7 +89,6 @@ public abstract class GVECollectionSetOperatorBase
         ))
         .join(newGraphIds, builder
           .field(GVETableSet.FIELD_GRAPH_ID).equalTo(tmpFieldName).toExpression())
-        .distinct()
     );
   }
 
@@ -113,7 +116,6 @@ public abstract class GVECollectionSetOperatorBase
         ))
         .join(newGraphIds, builder
           .field(GVETableSet.FIELD_GRAPH_ID).equalTo(tmpFieldName).toExpression())
-        .distinct()
     );
   }
 
